@@ -1,23 +1,134 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ProductoCard from '../components/ProductoCard';
+import BackgroundVideo from '../components/BackgroundVideo'; // Importamos el video
 
 const Climas = () => {
-  // Datos de ejemplo para Climas de Dota 2
-  const climasData = [
-    { id: 101, nombre: "Weather Ash", precio: 8.50, rareza: "RARE", imagenUrl: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_5fCscycG6S6EDuH80K99_L_rDeGzV_m_e-Wp3r-2-7FzUAn_K_F3Ips89_m9m_D6UAn-p_K3Vp_45cgF9-Wn_L6Wp-m_K3Fz_m-20An9S-W6Anp-S/360fx360f" },
-    { id: 102, nombre: "Weather Spring", precio: 5.00, rareza: "RARE", imagenUrl: "https://community.cloudflare.steamstatic.com/economy/image/-9a81dlWLwJ2UUGcVs_5fCscycG6S6EDuH80K99_L_rDeGzV_m_e-Wp3r-2-7FzUAn_K_F3Ips89_m9m_D6UAn-p_K3Vp_45cgF9-Wn_L6Wp-m_K3Fz_m-20An9S-W6Anp-S/360fx360f" }
+  const tiposClimas = [
+    "Ash (ceniza)",
+    "Aurora (aurora boreal)",
+    "Autumn (otoño)",
+    "Harvest (cosecha)",
+    "Moonbeam (rayo de luna)",
+    "Pestilence (peste)",
+    "Rain (lluvia)",
+    "Sirocco (viento del desierto)",
+    "Snow (nieve)",
+    "Spring (primavera)"
   ];
 
+  const [climasData] = useState([
+    { id: 401, nombre: "Weather Ash", tipo: "Ash (ceniza)", precio: 12.00, rareza: "RARE", imagenUrl: "https://via.placeholder.com/300x200?text=Weather+Ash" },
+    { id: 402, nombre: "Weather Rain", tipo: "Rain (lluvia)", precio: 15.00, rareza: "RARE", imagenUrl: "https://via.placeholder.com/300x200?text=Weather+Rain" },
+    { id: 403, nombre: "Weather Aurora", tipo: "Aurora (aurora boreal)", precio: 18.00, rareza: "RARE", imagenUrl: "https://via.placeholder.com/300x200?text=Weather+Aurora" },
+  ]);
+
+  const [filtroTipo, setFiltroTipo] = useState("TODOS");
+
+  const productosFiltrados = climasData.filter(item => {
+    return filtroTipo === "TODOS" || item.tipo === filtroTipo;
+  });
+
   return (
-    <div style={{ padding: '40px', backgroundColor: '#0a0a0b', minHeight: '100vh' }}>
-      <h1 style={{ color: 'var(--neon-cyan)', textAlign: 'center', marginTop: '50px' }}>CLIMAS</h1>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px', maxWidth: '1200px', margin: '0 auto' }}>
-        {climasData.map(item => (
-          <ProductoCard key={item.id} producto={item} />
-        ))}
+    <div style={styles.mainWrapper}>
+      {/* 1. VIDEO DE FONDO (Cámbialo por tu archivo real en public/videos/) */}
+      <BackgroundVideo videoSrc="public/videos/setcachevideo.mp4" />
+
+      <div style={styles.contentLayer}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>EFECTOS DE <span style={{ color: 'var(--neon-cyan)' }}>CLIMA</span></h1>
+          <div style={styles.underline}></div>
+          <p style={styles.subtitle}>Personaliza el ambiente de tu mapa</p>
+        </div>
+
+        {/* --- SELECTOR DE TIPO DE CLIMA --- */}
+        <div style={styles.filterBar}>
+          <label style={styles.label}>TIPO DE EFECTO:</label>
+          <select 
+            style={styles.selectInput}
+            onChange={(e) => setFiltroTipo(e.target.value)}
+            value={filtroTipo}
+          >
+            <option value="TODOS">-- TODOS LOS CLIMAS --</option>
+            {tiposClimas.map(clima => (
+              <option key={clima} value={clima}>{clima}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* --- GRID DE PRODUCTOS --- */}
+        <div style={styles.grid}>
+          {productosFiltrados.length > 0 ? (
+            productosFiltrados.map((item) => (
+              <ProductoCard key={item.id} producto={item} />
+            ))
+          ) : (
+            <div style={styles.noResult}>
+              <p>No hay stock disponible para el clima: <strong>{filtroTipo}</strong></p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
+};
+
+const styles = {
+  mainWrapper: {
+    position: 'relative',
+    minHeight: '100vh',
+    backgroundColor: '#0a0a0b',
+  },
+  contentLayer: {
+    position: 'relative',
+    zIndex: 1,
+    padding: '60px 5% 100px',
+  },
+  header: { textAlign: 'center', marginBottom: '40px' },
+  title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', textTransform: 'uppercase', textShadow: '0 0 15px rgba(0, 242, 255, 0.5)' },
+  underline: { height: '4px', width: '100px', background: 'var(--neon-cyan)', margin: '10px auto 20px', boxShadow: '0 0 10px var(--neon-cyan)' },
+  subtitle: { color: '#ddd', marginBottom: '20px', letterSpacing: '1px', textShadow: '1px 1px 3px black' },
+  
+  filterBar: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '50px',
+    background: 'rgba(20, 20, 22, 0.6)', 
+    backdropFilter: 'blur(10px)',
+    padding: '25px',
+    borderRadius: '15px',
+    border: '1px solid rgba(0, 242, 255, 0.2)',
+    boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+  },
+  label: { fontSize: '0.75rem', color: 'var(--neon-cyan)', fontWeight: 'bold', letterSpacing: '2px' },
+  selectInput: {
+    padding: '12px 20px',
+    borderRadius: '8px',
+    border: '1px solid #444',
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    color: '#fff',
+    fontSize: '1rem',
+    cursor: 'pointer',
+    width: '100%',
+    maxWidth: '350px',
+    outline: 'none',
+  },
+  grid: { 
+    display: 'grid', 
+    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', 
+    gap: '35px', 
+    maxWidth: '1200px', 
+    margin: '0 auto' 
+  },
+  noResult: { 
+    gridColumn: '1/-1', 
+    textAlign: 'center', 
+    padding: '60px', 
+    color: '#aaa', 
+    background: 'rgba(0,0,0,0.4)',
+    borderRadius: '15px' 
+  }
 };
 
 export default Climas;

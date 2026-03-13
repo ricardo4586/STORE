@@ -1,10 +1,13 @@
 import React from 'react';
+import { useCart } from '../context/CartContext'; // Importamos el carrito
 
 const ProductoCard = ({ producto }) => {
-  // Función para que el botón abra WhatsApp con el nombre del ítem
-  const contactarWhatsApp = () => {
-    const telefono = "51900000000"; // Pon aquí el número del cliente
-    const mensaje = `Hola Pantera Store, me interesa el ítem de Dota 2: ${producto.nombre}`;
+  const { addToCart } = useCart(); // Hook para usar la función de agregar
+
+  const contactarWhatsAppDirecto = () => {
+    const telefono = "51912167997"; 
+    // Corregido: Usamos la misma variable 'mensaje'
+    const mensaje = `Hola Pantera Store, me interesa adquirir este ítem: ${producto.nombre} (S/ ${producto.precio})`;
     const url = `https://wa.me/${telefono}?text=${encodeURIComponent(mensaje)}`;
     window.open(url, '_blank');
   };
@@ -17,10 +20,25 @@ const ProductoCard = ({ producto }) => {
       <div style={styles.info}>
         <h3 style={styles.titulo}>{producto.nombre}</h3>
         <div style={styles.divider}></div>
-        <p style={styles.precio}>S/ {producto.precio}</p>
-        <button onClick={contactarWhatsApp} className="btn-neon" style={styles.boton}>
-          ADQUIRIR ÍTEM
-        </button>
+        <p style={styles.precio}>S/ {Number(producto.precio).toFixed(2)}</p>
+        
+        {/* BOTONES ACCIÓN */}
+        <div style={styles.containerBotones}>
+          <button 
+            onClick={contactarWhatsAppDirecto} 
+            className="btn-neon" 
+            style={{...styles.boton, backgroundColor: '#25d366'}}
+          >
+            ADQUIRIR YA
+          </button>
+          
+          <button 
+            onClick={() => addToCart(producto)} 
+            style={{...styles.boton, backgroundColor: 'var(--neon-purple)'}}
+          >
+            + CARRITO
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -57,7 +75,7 @@ const styles = {
   info: { padding: '20px', textAlign: 'center' },
   titulo: { 
     margin: '0 0 10px 0', 
-    fontSize: '1rem', 
+    fontSize: '0.9rem', 
     color: '#fff', 
     textTransform: 'uppercase',
     letterSpacing: '1px',
@@ -74,13 +92,26 @@ const styles = {
   precio: { 
     color: 'var(--neon-cyan)', 
     fontWeight: '800', 
-    fontSize: '1.5rem',
+    fontSize: '1.4rem',
     margin: '10px 0'
+  },
+  containerBotones: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+    marginTop: '10px'
   },
   boton: { 
     width: '100%',
-    marginTop: '10px',
-    fontSize: '0.8rem'
+    padding: '10px',
+    borderRadius: '6px',
+    border: 'none',
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: '0.75rem',
+    cursor: 'pointer',
+    textTransform: 'uppercase',
+    transition: '0.3s'
   }
 };
 

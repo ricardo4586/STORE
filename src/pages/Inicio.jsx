@@ -39,7 +39,7 @@ const Inicio = () => {
             style={styles.mainLogo} 
           />
           <h2 style={styles.tagline}>LOS MEJORES ITEMS DE DOTA 2</h2>
-          <p style={styles.subTagline}>SETS • CLIMAS • COURIERS • INMORTALES • ARCANOS</p>
+          <p style={styles.subTagline}>SETS CACHE • CLIMAS • COURIERS • INMORTALES • ARCANOS</p>
           <button className="btn-neon">EXPLORAR CATÁLOGO</button>
         </header>
       </div>

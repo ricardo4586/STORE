@@ -34,3 +34,24 @@ body {
   box-shadow: 0 0 40px var(--neon-cyan);
   transform: translateY(-2px);
 }
+
+@keyframes neon-pulse {
+  0% { box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan); }
+  50% { box-shadow: 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan); }
+  100% { box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan); }
+}
+
+.cart-active {
+  animation: neon-pulse 2s infinite ease-in-out;
+  border: 2px solid #fff !important;
+}
+
+/* Efecto de sacudida cuando se agrega algo nuevo */
+@keyframes cart-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.cart-bounce-effect {
+  animation: cart-bounce 0.4s ease;
+}
