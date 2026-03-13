@@ -29,8 +29,8 @@ const Sets = () => {
 
   return (
     <div style={styles.mainWrapper}>
-      {/* 1. VIDEO DE FONDO (Asegúrate que el archivo esté en public/videos/) */}
-      <BackgroundVideo videoSrc="/videos/arcanovideo.mp4" />
+      {/* 1. VIDEO DE FONDO - Usando la ruta corregida */}
+      <BackgroundVideo videoSrc="public/videos/setcachevideo.mp4" />
 
       <div style={styles.contentLayer}>
         <div style={styles.header}>
@@ -48,31 +48,18 @@ const Sets = () => {
           />
 
           <div style={styles.attributeButtons}>
-            <button 
-              onClick={() => setAtributoSeleccionado("TODOS")}
-              style={atributoSeleccionado === "TODOS" ? styles.btnActive : styles.btnInactive}>
-              TODOS
-            </button>
-            <button 
-              onClick={() => setAtributoSeleccionado("Fuerza")}
-              style={atributoSeleccionado === "Fuerza" ? styles.btnStr : styles.btnInactive}>
-              FUERZA
-            </button>
-            <button 
-              onClick={() => setAtributoSeleccionado("Agilidad")}
-              style={atributoSeleccionado === "Agilidad" ? styles.btnAgi : styles.btnInactive}>
-              AGILIDAD
-            </button>
-            <button 
-              onClick={() => setAtributoSeleccionado("Inteligencia")}
-              style={atributoSeleccionado === "Inteligencia" ? styles.btnInt : styles.btnInactive}>
-              INTELIGENCIA
-            </button>
-            <button 
-              onClick={() => setAtributoSeleccionado("Universal")}
-              style={atributoSeleccionado === "Universal" ? styles.btnUni : styles.btnInactive}>
-              UNIVERSAL
-            </button>
+            {["TODOS", "Fuerza", "Agilidad", "Inteligencia", "Universal"].map(attr => (
+               <button 
+               key={attr}
+               onClick={() => setAtributoSeleccionado(attr)}
+               style={
+                 atributoSeleccionado === attr 
+                   ? (attr === "Fuerza" ? styles.btnStr : attr === "Agilidad" ? styles.btnAgi : attr === "Inteligencia" ? styles.btnInt : attr === "Universal" ? styles.btnUni : styles.btnActive)
+                   : styles.btnInactive
+               }>
+               {attr.toUpperCase()}
+             </button>
+            ))}
           </div>
         </div>
 
@@ -88,16 +75,18 @@ const styles = {
   mainWrapper: {
     position: 'relative',
     minHeight: '100vh',
-    backgroundColor: '#000', // Respaldo negro
+    overflow: 'hidden',
+    backgroundColor: 'transparent', // Sin fondo sólido para que se vea el video
   },
   contentLayer: {
     position: 'relative',
     zIndex: 1,
     padding: '60px 5% 100px',
+    backgroundColor: 'transparent', // Capa transparente
   },
   header: { textAlign: 'center', marginBottom: '40px' },
-  title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', color: 'white' },
-  underline: { height: '4px', width: '80px', background: 'var(--neon-cyan)', margin: '10px auto' },
+  title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', color: 'white', textShadow: '2px 2px 10px rgba(0,0,0,0.8)' },
+  underline: { height: '4px', width: '80px', background: 'var(--neon-cyan)', margin: '10px auto', boxShadow: '0 0 10px var(--neon-cyan)' },
   
   filterContainer: { 
     display: 'flex', 
@@ -105,8 +94,8 @@ const styles = {
     alignItems: 'center', 
     gap: '20px', 
     marginBottom: '50px',
-    background: 'rgba(20, 20, 22, 0.6)', 
-    backdropFilter: 'blur(10px)',
+    background: 'rgba(10, 10, 12, 0.7)', // Fondo semi-transparente
+    backdropFilter: 'blur(10px)', // Efecto esmerilado
     padding: '30px',
     borderRadius: '15px',
     border: '1px solid rgba(255, 255, 255, 0.1)'
@@ -124,12 +113,12 @@ const styles = {
   
   attributeButtons: { display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' },
   btnInactive: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #333', backgroundColor: 'rgba(0,0,0,0.5)', color: '#888', cursor: 'pointer', transition: '0.3s' },
-  btnActive: { padding: '10px 15px', borderRadius: '5px', border: '1px solid var(--neon-cyan)', backgroundColor: 'rgba(0, 242, 255, 0.1)', color: 'var(--neon-cyan)', cursor: 'pointer' },
+  btnActive: { padding: '10px 15px', borderRadius: '5px', border: '1px solid var(--neon-cyan)', backgroundColor: 'rgba(0, 242, 255, 0.2)', color: 'var(--neon-cyan)', cursor: 'pointer' },
   
-  btnStr: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #ff4d4d', backgroundColor: 'rgba(255, 77, 77, 0.2)', color: '#ff4d4d', cursor: 'pointer', fontWeight: 'bold' },
-  btnAgi: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dff4d', backgroundColor: 'rgba(77, 255, 77, 0.2)', color: '#4dff4d', cursor: 'pointer', fontWeight: 'bold' },
-  btnInt: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dbdff', backgroundColor: 'rgba(77, 189, 255, 0.2)', color: '#4dbdff', cursor: 'pointer', fontWeight: 'bold' },
-  btnUni: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #d94dff', backgroundColor: 'rgba(217, 77, 255, 0.2)', color: '#d94dff', cursor: 'pointer', fontWeight: 'bold' },
+  btnStr: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #ff4d4d', backgroundColor: 'rgba(255, 77, 77, 0.3)', color: '#ff4d4d', cursor: 'pointer', fontWeight: 'bold' },
+  btnAgi: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dff4d', backgroundColor: 'rgba(77, 255, 77, 0.3)', color: '#4dff4d', cursor: 'pointer', fontWeight: 'bold' },
+  btnInt: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dbdff', backgroundColor: 'rgba(77, 189, 255, 0.3)', color: '#4dbdff', cursor: 'pointer', fontWeight: 'bold' },
+  btnUni: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #d94dff', backgroundColor: 'rgba(217, 77, 255, 0.3)', color: '#d94dff', cursor: 'pointer', fontWeight: 'bold' },
   
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px', maxWidth: '1200px', margin: '0 auto' }
 };

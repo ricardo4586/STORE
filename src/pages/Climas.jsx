@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import ProductoCard from '../components/ProductoCard';
-import BackgroundVideo from '../components/BackgroundVideo'; // Importamos el video
+import BackgroundVideo from '../components/BackgroundVideo';
 
 const Climas = () => {
   const tiposClimas = [
@@ -30,7 +30,7 @@ const Climas = () => {
 
   return (
     <div style={styles.mainWrapper}>
-      {/* 1. VIDEO DE FONDO (Cámbialo por tu archivo real en public/videos/) */}
+      {/* 1. VIDEO DE FONDO - Usando la misma ruta que en Arcanos */}
       <BackgroundVideo videoSrc="public/videos/setcachevideo.mp4" />
 
       <div style={styles.contentLayer}>
@@ -76,15 +76,16 @@ const styles = {
   mainWrapper: {
     position: 'relative',
     minHeight: '100vh',
-    backgroundColor: '#0a0a0b',
+    overflow: 'hidden', // Igual que en Arcanos
   },
   contentLayer: {
     position: 'relative',
-    zIndex: 1,
+    zIndex: 1, // Por encima del video
     padding: '60px 5% 100px',
+    backgroundColor: 'transparent', // CLAVE: Debe ser transparente para ver el video
   },
   header: { textAlign: 'center', marginBottom: '40px' },
-  title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', textTransform: 'uppercase', textShadow: '0 0 15px rgba(0, 242, 255, 0.5)' },
+  title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', textTransform: 'uppercase', color: 'white', textShadow: '0 0 15px rgba(0, 242, 255, 0.5)' },
   underline: { height: '4px', width: '100px', background: 'var(--neon-cyan)', margin: '10px auto 20px', boxShadow: '0 0 10px var(--neon-cyan)' },
   subtitle: { color: '#ddd', marginBottom: '20px', letterSpacing: '1px', textShadow: '1px 1px 3px black' },
   
@@ -94,8 +95,8 @@ const styles = {
     alignItems: 'center',
     gap: '10px',
     marginBottom: '50px',
-    background: 'rgba(20, 20, 22, 0.6)', 
-    backdropFilter: 'blur(10px)',
+    background: 'rgba(10, 10, 12, 0.7)', // Transparencia oscura
+    backdropFilter: 'blur(8px)', // Efecto cristal
     padding: '25px',
     borderRadius: '15px',
     border: '1px solid rgba(0, 242, 255, 0.2)',
