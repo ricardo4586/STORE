@@ -1,0 +1,36 @@
+/* src/index.css */
+:root {
+  --neon-cyan: #00f2ff;
+  --neon-purple: #bc13fe;
+  --dark-bg: #0a0a0b;
+}
+
+body {
+  margin: 0;
+  background-color: var(--dark-bg);
+  color: white;
+  font-family: 'Inter', sans-serif; /* OOrbitron si la importas */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Efecto de resplandor para botones */
+.btn-neon {
+  border: 2px solid var(--neon-cyan);
+  background: transparent;
+  color: white;
+  padding: 14px 35px;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 0 15px rgba(0, 242, 255, 0.4);
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.btn-neon:hover {
+  background: var(--neon-cyan);
+  color: black;
+  box-shadow: 0 0 40px var(--neon-cyan);
+  transform: translateY(-2px);
+}
