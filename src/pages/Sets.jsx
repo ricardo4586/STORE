@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import ProductoCard from '../components/ProductoCard';
-import BackgroundVideo from '../components/BackgroundVideo'; 
+import BackgroundVideo from '../components/BackgroundVideo';
 
 const Sets = () => {
   const heroesPorAtributo = {
@@ -10,39 +11,59 @@ const Sets = () => {
     Universal: ["Bane", "Batrider", "Broodmother", "Chen", "Clockwerk", "Dark Seer", "Dark Willow", "Dazzle", "Invoker", "Kez", "Lone Druid", "Lycan", "Magnus", "Marci", "Muerta", "Nyx Assassin", "Pangolier", "Phoenix", "Sand King", "Snapfire", "Techies", "Vengeful Spirit", "Venomancer", "Visage", "Void Spirit", "Windranger", "Winter Wyvern"]
   };
 
-  const [setsData] = useState([
-    { id: 1, nombre: "Lineage of the Stormlords", heroe: "Juggernaut", precio: 45.0, rareza: "LEGENDARIO", imagenUrl: "https://via.placeholder.com/300x200" },
-    { id: 2, nombre: "Exalted Feast of Abscession", heroe: "Pudge", precio: 120.0, rareza: "ARCANA", imagenUrl: "https://via.placeholder.com/300x200" },
-    { id: 3, nombre: "Solar Forge", heroe: "Phoenix", precio: 25.0, rareza: "INMORTAL", imagenUrl: "https://via.placeholder.com/300x200" },
-  ]);
-
+  // 1. Estados para los datos de la DB
+  const [setsData, setSetsData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [atributoSeleccionado, setAtributoSeleccionado] = useState("TODOS");
 
+  // 2. Cargar datos desde el servidor
+  useEffect(() => {
+    const fetchSets = async () => {
+      try {
+        const res = await axios.get('http://localhost:5000/api/productos');
+        // Filtramos solo por la categoría 'sets'
+        const soloSets = res.data.filter(item => item.categoria === 'sets');
+        setSetsData(soloSets);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error al cargar sets:", error);
+        setLoading(false);
+      }
+    };
+    fetchSets();
+  }, []);
+
+  // 3. Lógica de filtrado combinada (Búsqueda + Atributo)
   const productosFiltrados = setsData.filter(item => {
-    const coincideNombre = item.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
-                          item.heroe.toLowerCase().includes(busqueda.toLowerCase());
-    const coincideAtributo = atributoSeleccionado === "TODOS" || 
-                             heroesPorAtributo[atributoSeleccionado].includes(item.heroe);
+    const coincideNombre = 
+      item.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
+      item.heroe.toLowerCase().includes(busqueda.toLowerCase());
+    
+    const coincideAtributo = 
+      atributoSeleccionado === "TODOS" || 
+      (heroesPorAtributo[atributoSeleccionado] && heroesPorAtributo[atributoSeleccionado].includes(item.heroe));
+    
     return coincideNombre && coincideAtributo;
   });
 
   return (
     <div style={styles.mainWrapper}>
-      {/* 1. VIDEO DE FONDO - Usando la ruta corregida */}
-      <BackgroundVideo videoSrc="public/videos/setcachevideo.mp4" />
+      <BackgroundVideo videoSrc="/videos/setcachevideo.mp4" />
 
       <div style={styles.contentLayer}>
         <div style={styles.header}>
           <h1 style={styles.title}>CATÁLOGO <span style={{color: 'var(--neon-cyan)'}}>PANTERA</span></h1>
           <div style={styles.underline}></div>
+          <p style={styles.subtitle}></p>
+          <p style={styles.subtitle}>Explora los mejores Sets de Dota 2</p>
         </div>
 
         {/* --- PANEL DE FILTROS --- */}
         <div style={styles.filterContainer}>
           <input 
             type="text" 
-            placeholder="Escribe el nombre del héroe..." 
+            placeholder="Escribe el nombre del héroe o del set..." 
             style={styles.searchInput}
             onChange={(e) => setBusqueda(e.target.value)}
           />
@@ -63,63 +84,38 @@ const Sets = () => {
           </div>
         </div>
 
+        {/* --- GRID DE RESULTADOS --- */}
         <div style={styles.grid}>
-          {productosFiltrados.map(item => <ProductoCard key={item.id} producto={item} />)}
+          {loading ? (
+            <p style={{color: 'white', textAlign: 'center', gridColumn: '1/-1'}}>Cargando inventario...</p>
+          ) : productosFiltrados.length > 0 ? (
+            productosFiltrados.map(item => <ProductoCard key={item._id} producto={item} />)
+          ) : (
+            <p style={{color: '#888', textAlign: 'center', gridColumn: '1/-1'}}>No se encontraron resultados para tu búsqueda.</p>
+          )}
         </div>
       </div>
     </div>
   );
 };
 
+// ... (Mismos estilos que tenías)
 const styles = {
-  mainWrapper: {
-    position: 'relative',
-    minHeight: '100vh',
-    overflow: 'hidden',
-    backgroundColor: 'transparent', // Sin fondo sólido para que se vea el video
-  },
-  contentLayer: {
-    position: 'relative',
-    zIndex: 1,
-    padding: '60px 5% 100px',
-    backgroundColor: 'transparent', // Capa transparente
-  },
+  mainWrapper: { position: 'relative', minHeight: '100vh', overflow: 'hidden', backgroundColor: 'transparent' },
+  contentLayer: { position: 'relative', zIndex: 1, padding: '60px 5% 100px', backgroundColor: 'transparent' },
   header: { textAlign: 'center', marginBottom: '40px' },
   title: { fontSize: '2.5rem', fontWeight: '900', letterSpacing: '2px', color: 'white', textShadow: '2px 2px 10px rgba(0,0,0,0.8)' },
   underline: { height: '4px', width: '80px', background: 'var(--neon-cyan)', margin: '10px auto', boxShadow: '0 0 10px var(--neon-cyan)' },
-  
-  filterContainer: { 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    gap: '20px', 
-    marginBottom: '50px',
-    background: 'rgba(10, 10, 12, 0.7)', // Fondo semi-transparente
-    backdropFilter: 'blur(10px)', // Efecto esmerilado
-    padding: '30px',
-    borderRadius: '15px',
-    border: '1px solid rgba(255, 255, 255, 0.1)'
-  },
-  searchInput: { 
-    padding: '12px 20px', 
-    width: '100%', 
-    maxWidth: '400px', 
-    borderRadius: '8px', 
-    border: '1px solid #444', 
-    backgroundColor: 'rgba(0,0,0,0.8)', 
-    color: 'white',
-    outline: 'none'
-  },
-  
+  subtitle: { color: '#ccc', textAlign: 'center', marginTop: '-15px', marginBottom: '20px' },
+  filterContainer: { display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', marginBottom: '50px', background: 'rgba(10, 10, 12, 0.7)', backdropFilter: 'blur(10px)', padding: '30px', borderRadius: '15px', border: '1px solid rgba(255, 255, 255, 0.1)' },
+  searchInput: { padding: '12px 20px', width: '100%', maxWidth: '400px', borderRadius: '8px', border: '1px solid #444', backgroundColor: 'rgba(0,0,0,0.8)', color: 'white', outline: 'none' },
   attributeButtons: { display: 'flex', gap: '10px', flexWrap: 'wrap', justifyContent: 'center' },
   btnInactive: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #333', backgroundColor: 'rgba(0,0,0,0.5)', color: '#888', cursor: 'pointer', transition: '0.3s' },
   btnActive: { padding: '10px 15px', borderRadius: '5px', border: '1px solid var(--neon-cyan)', backgroundColor: 'rgba(0, 242, 255, 0.2)', color: 'var(--neon-cyan)', cursor: 'pointer' },
-  
   btnStr: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #ff4d4d', backgroundColor: 'rgba(255, 77, 77, 0.3)', color: '#ff4d4d', cursor: 'pointer', fontWeight: 'bold' },
   btnAgi: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dff4d', backgroundColor: 'rgba(77, 255, 77, 0.3)', color: '#4dff4d', cursor: 'pointer', fontWeight: 'bold' },
   btnInt: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #4dbdff', backgroundColor: 'rgba(77, 189, 255, 0.3)', color: '#4dbdff', cursor: 'pointer', fontWeight: 'bold' },
   btnUni: { padding: '10px 15px', borderRadius: '5px', border: '1px solid #d94dff', backgroundColor: 'rgba(217, 77, 255, 0.3)', color: '#d94dff', cursor: 'pointer', fontWeight: 'bold' },
-  
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '30px', maxWidth: '1200px', margin: '0 auto' }
 };
 

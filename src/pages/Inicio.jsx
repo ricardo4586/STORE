@@ -1,11 +1,11 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // 1. Importamos Link
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
 const Inicio = () => {
-  // En Vite, las imágenes en 'public' se llaman directamente con /
   const imagenesFondo = [
     "/imagen1carrucel.png", 
     "/imagen2carrusel.png", 
@@ -40,14 +40,18 @@ const Inicio = () => {
           />
           <h2 style={styles.tagline}>LOS MEJORES ITEMS DE DOTA 2</h2>
           <p style={styles.subTagline}>SETS CACHE • CLIMAS • COURIERS • INMORTALES • ARCANOS</p>
-          <button className="btn-neon">EXPLORAR CATÁLOGO</button>
+          
+          {/* 2. Envolvemos el botón con Link apuntando a la ruta de Sets */}
+          <Link to="/sets cache" style={{ textDecoration: 'none' }}>
+            <button className="btn-neon">EXPLORAR CATÁLOGO</button>
+          </Link>
         </header>
       </div>
     </div>
   );
 };
 
-// Mantenemos tus estilos exactamente igual
+// ... (Tus estilos se mantienen igual)
 const styles = {
   container: { position: 'relative', width: '100%', height: '100vh', overflow: 'hidden', backgroundColor: '#000' },
   swiperWrapper: { position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1 },

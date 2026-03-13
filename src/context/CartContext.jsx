@@ -9,13 +9,15 @@ export const CartProvider = ({ children }) => {
     setCart([...cart, producto]);
   };
 
-  const removeFromCart = (id) => {
-    setCart(cart.filter(item => item.id !== id));
+  // CAMBIO CLAVE: Ahora recibe el INDEX, no el ID
+  const removeFromCart = (indexParaBorrar) => {
+    setCart(cart.filter((_, index) => index !== indexParaBorrar));
   };
 
   const clearCart = () => setCart([]);
 
-  const total = cart.reduce((acc, item) => acc + item.precio, 0);
+  // Aseguramos que el precio sea número para evitar errores en el total
+  const total = cart.reduce((acc, item) => acc + Number(item.precio), 0);
 
   return (
     <CartContext.Provider value={{ cart, addToCart, removeFromCart, clearCart, total }}>

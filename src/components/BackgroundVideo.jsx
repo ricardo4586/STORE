@@ -40,7 +40,7 @@ const styles = {
     left: 0,
     width: '100%',
     height: '100%',
-    background: 'radial-gradient(circle, rgba(10,10,11,0.3) 0%, rgba(10,10,11,0.5) 100%)',
+    background: 'radial-gradient(circle, rgba(10,10,11,0.05) 0%, rgba(10,10,11,0.2) 100%)',
   }
 };
 

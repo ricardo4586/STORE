@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useCart } from '../context/CartContext';
 
 const CarritoFlotante = () => {
-  const { cart, total, clearCart } = useCart();
+  // 1. Extraemos removeFromCart del context
+  const { cart, total, clearCart, removeFromCart } = useCart();
   const [show, setShow] = useState(false);
   const [isBouncing, setIsBouncing] = useState(false);
 
-  // Efecto visual de rebote cuando cambia el tamaño del carrito
   useEffect(() => {
     if (cart.length > 0) {
       setIsBouncing(true);
@@ -16,7 +16,7 @@ const CarritoFlotante = () => {
   }, [cart.length]);
 
   const finalizarPedidoTotal = () => {
-    const listaItems = cart.map(i => `- ${i.nombre} (S/ ${i.precio})`).join('\n');
+    const listaItems = cart.map(i => `- ${i.nombre} (S/ ${Number(i.precio).toFixed(2)})`).join('\n');
     const msg = `¡Hola Pantera Store! 🐆\nQuiero adquirir los siguientes ítems:\n${listaItems}\n\nTOTAL: S/ ${total.toFixed(2)}`;
     window.open(`https://wa.me/51912167997?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -45,8 +45,21 @@ const CarritoFlotante = () => {
           <div style={styles.lista}>
             {cart.map((item, index) => (
               <div key={index} style={styles.itemRow}>
-                <span>{item.nombre}</span>
-                <span style={{ color: 'var(--neon-cyan)' }}>S/ {item.precio.toFixed(2)}</span>
+                <div style={styles.itemMainInfo}>
+                  <span style={styles.itemName}>{item.nombre}</span>
+                  <div style={styles.priceContainer}>
+                    <span style={{ color: 'var(--neon-cyan)', fontSize: '0.8rem' }}>S/ {Number(item.precio).toFixed(2)}</span>
+                    
+                    {/* BOTÓN PARA ELIMINAR SOLO ESTE ITEM */}
+                    <button 
+                      onClick={() => removeFromCart(index)} 
+                      style={styles.btnRemove}
+                      title="Eliminar artículo"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -115,11 +128,25 @@ const styles = {
   btnClose: { background: 'none', border: 'none', color: '#666', cursor: 'pointer', fontSize: '1.2rem' },
   lista: { maxHeight: '250px', overflowY: 'auto', margin: '15px 0' },
   itemRow: { 
-    display: 'flex', 
-    justifyContent: 'space-between', 
     padding: '10px 0', 
-    fontSize: '0.85rem',
     borderBottom: '1px solid #222' 
+  },
+  itemMainInfo: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center'
+  },
+  itemName: { fontSize: '0.8rem', color: '#eee', flex: 1, paddingRight: '10px' },
+  priceContainer: { display: 'flex', alignItems: 'center', gap: '8px' },
+  btnRemove: {
+    background: 'rgba(255, 77, 77, 0.1)',
+    color: '#ff4d4d',
+    border: '1px solid #ff4d4d',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '0.65rem',
+    padding: '2px 6px',
+    transition: '0.3s'
   },
   footer: { marginTop: '15px', display: 'flex', flexDirection: 'column', gap: '10px' },
   totalRow: { display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem', marginBottom: '5px' },
