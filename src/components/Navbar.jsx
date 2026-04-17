@@ -1,5 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+// 1. Importamos el componente de Lucide
+import { UserRound } from 'lucide-react'; 
 
 const Navbar = () => {
   return (
@@ -16,13 +18,16 @@ const Navbar = () => {
         <Link to="/climas" className="nav-link" style={styles.link}>CLIMAS</Link>
         <Link to="/inmortales" className="nav-link" style={styles.link}>INMORTALES</Link>
         <Link to="/arcanos" className="nav-link" style={styles.link}>ARCANOS</Link>
-        {/* NUEVA CATEGORÍA AGREGADA */}
         <Link to="/couriers" className="nav-link" style={styles.link}>COURIERS</Link>
         <Link to="/soporte" className="nav-link" style={styles.link}>SOPORTE</Link>
         
-        {/* ICONO DE LOGIN / ADMIN */}
+        {/* REEMPLAZO: Icono de UserRound en lugar del candado */}
         <Link to="/login" className="nav-link login-icon" style={styles.loginBtn} title="Acceso Admin">
-          <span style={styles.iconSpan}>🔐</span>
+          <UserRound 
+            size={20} 
+            strokeWidth={1.5} 
+            color="var(--neon-cyan)" 
+          />
         </Link>
       </div>
     </nav>
@@ -55,13 +60,13 @@ const styles = {
   },
   navLinks: {
     display: 'flex',
-    alignItems: 'center', // Alinea el icono verticalmente con los textos
-    gap: '25px', // Reduje un poco el gap para que quepa todo bien
+    alignItems: 'center',
+    gap: '25px',
   },
   link: {
     color: '#e0e0e0',
     textDecoration: 'none',
-    fontSize: '0.8rem', // Ajustado ligeramente para mayor espacio
+    fontSize: '0.8rem',
     fontWeight: '600',
     transition: 'all 0.3s ease',
     letterSpacing: '1.2px',
@@ -70,18 +75,15 @@ const styles = {
   loginBtn: {
     textDecoration: 'none',
     marginLeft: '15px',
-    padding: '5px 10px',
-    borderRadius: '8px',
+    padding: '8px', // Ajustado para que el icono respire
+    borderRadius: '50%', // Lo hace circular para que el UserRound luzca mejor
     backgroundColor: 'rgba(0, 242, 255, 0.05)',
     border: '1px solid rgba(0, 242, 255, 0.2)',
     transition: 'all 0.3s ease',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
-  },
-  iconSpan: {
-    fontSize: '1.1rem',
-    filter: 'drop-shadow(0 0 5px rgba(0, 242, 255, 0.5))'
+    justifyContent: 'center',
+    filter: 'drop-shadow(0 0 5px rgba(0, 242, 255, 0.3))'
   }
 };
 

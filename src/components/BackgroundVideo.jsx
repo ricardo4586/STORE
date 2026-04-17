@@ -11,9 +11,9 @@ const BackgroundVideo = ({ videoSrc }) => {
         style={styles.video}
       >
         <source src={videoSrc} type="video/mp4" />
-      </video> {/* <--- Aquí estaba el error, ya está corregido */}
+      </video> {}
       
-      {/* Capa oscura para que el texto sea legible */}
+      {}
       <div style={styles.overlay}></div>
     </div>
   );
