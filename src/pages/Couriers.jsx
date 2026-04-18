@@ -21,8 +21,8 @@ const API_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_COURIERS = [
-  '/imagen1carrusel.png',
-  '/imagen3.jpeg',
+  '/imagen1.png',
+  '/imagen2.png',
   '/imagen6.jpeg',
 ];
 
