@@ -8,13 +8,13 @@ import Inmortales from './pages/Inmortales';
 import Arcanos from './pages/Arcanos';
 import Soporte from './pages/Soporte';
 import Admin from './pages/Admin'; 
-import Login from './pages/Login'; // Importamos el nuevo Login
+import Login from './pages/Login'; 
 import CarritoFlotante from './components/CarritoFlotante';
 import { CartProvider } from './context/CartContext';
 import './index.css';
 import Couriers from './pages/Couriers';
+
 // --- COMPONENTE DE SEGURIDAD ---
-// Verifica si existe el permiso en el almacenamiento local
 const ProtectedRoute = ({ children }) => {
   const isAuthenticated = localStorage.getItem('adminToken') === 'true';
   return isAuthenticated ? children : <Navigate to="/login" />;
@@ -49,6 +49,13 @@ function App() {
                 </ProtectedRoute>
               } 
             />
+
+            {/* ESTA ES LA RUTA DE REDIRECCIÓN:
+                Cualquier ruta que no coincida con las anteriores 
+                redirigirá automáticamente a la página de Soporte.
+            */}
+            <Route path="*" element={<Navigate to="/soporte" replace />} />
+            
           </Routes>
         </div>
       </Router>

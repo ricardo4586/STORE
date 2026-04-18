@@ -21,10 +21,11 @@ const API_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_COURIERS = [
-  '/fondos/courier1.png',
-  '/fondos/courier2.png',
-  '/fondos/courier3.png',
+  '/public/imagen4.jpeg',
+  '/public/imagen3.jpeg',
+  '/public/imagen7.jpeg',
 ];
+
 
 // =============================================================================
 // KEYFRAMES

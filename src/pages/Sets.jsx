@@ -23,9 +23,9 @@ import 'swiper/css/effect-fade';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_SETS = [
-  '/fondos/sets1.png',
-  '/fondos/sets2.png',
-  '/fondos/sets3.png',
+  '/public/imagen4.jpeg',
+  '/public/imagen3.jpeg',
+  '/public/imagen7.jpeg',
 ];
 
 const HEROES_POR_ATRIBUTO = {

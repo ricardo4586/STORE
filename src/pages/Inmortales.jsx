@@ -2,6 +2,8 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
+// Importación de los nuevos iconos
+import { Search, Sword, DollarSign, ListFilter, RotateCcw, AlertTriangle } from 'lucide-react';
 import ProductoCard from '../components/ProductoCard';
 
 import 'swiper/css';
@@ -12,12 +14,10 @@ import 'swiper/css/effect-fade';
 // =============================================================================
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
-// ⚠ IMPORTANTE: movelas a public/fondos/ para que queden organizadas.
-// Si las dejas en la raíz de public/, usa: '/inmortal.png', '/inmortal2.png'
 const FONDOS_INMORTALES = [
-  '/public/imagen7.jpeg',
+  '/public/imagen4.jpeg',
   '/public/imagen3.jpeg',
-  '/public/imagen2.jpeg',
+  '/public/imagen7.jpeg',
 ];
 
 const HEROES_CON_INMORTALES = [
@@ -43,7 +43,7 @@ const OPCIONES_ORDEN = {
 // =============================================================================
 const KEYFRAMES = `
   @keyframes kenBurns {
-    0%   { transform: scale(1)    translate(0, 0); }
+    0%   { transform: scale(1)     translate(0, 0); }
     50%  { transform: scale(1.1)  translate(-1%, -1%); }
     100% { transform: scale(1.05) translate(1%, 1%); }
   }
@@ -153,7 +153,6 @@ const Inmortales = () => {
       <style>{KEYFRAMES}</style>
 
       <div style={styles.mainWrapper}>
-        {/* Carrusel de fondo */}
         <div style={styles.swiperWrapper}>
           <Swiper
             modules={[Autoplay, EffectFade]}
@@ -199,17 +198,21 @@ const Inmortales = () => {
               </div>
               <div style={styles.statDivider} />
               <div style={styles.statItem}>
-                <span style={styles.statNumber}>{stats.heroes}</span>
+                <span style={stats.heroes > 0 ? styles.statNumber : { ...styles.statNumber, color: '#555' }}>
+                  {stats.heroes}
+                </span>
                 <span style={styles.statLabel}>Héroes</span>
               </div>
             </div>
           </div>
 
-          {/* Filtros */}
+          {/* Filtros con Iconos Actualizados */}
           <div style={styles.filterBar}>
             <div style={styles.filterGrid}>
               <div style={styles.filterCol}>
-                <label style={styles.label}>🔎 BUSCAR</label>
+                <label style={styles.label}>
+                  <Search size={14} style={{ marginRight: '6px' }} /> BUSCAR
+                </label>
                 <input
                   type="text"
                   placeholder="Nombre, héroe o rareza..."
@@ -220,7 +223,9 @@ const Inmortales = () => {
               </div>
 
               <div style={styles.filterCol}>
-                <label style={styles.label}>⚔ HÉROE</label>
+                <label style={styles.label}>
+                  <Sword size={14} style={{ marginRight: '6px' }} /> HÉROE
+                </label>
                 <select
                   value={heroeSeleccionado}
                   onChange={(e) => setHeroeSeleccionado(e.target.value)}
@@ -234,7 +239,9 @@ const Inmortales = () => {
               </div>
 
               <div style={styles.filterCol}>
-                <label style={styles.label}>💰 PRECIO MÁX ($)</label>
+                <label style={styles.label}>
+                  <DollarSign size={14} style={{ marginRight: '6px' }} /> PRECIO MÁX
+                </label>
                 <input
                   type="number"
                   min="0"
@@ -246,7 +253,9 @@ const Inmortales = () => {
               </div>
 
               <div style={styles.filterCol}>
-                <label style={styles.label}>↕ ORDENAR</label>
+                <label style={styles.label}>
+                  <ListFilter size={14} style={{ marginRight: '6px' }} /> ORDENAR
+                </label>
                 <select
                   value={orden}
                   onChange={(e) => setOrden(e.target.value)}
@@ -277,13 +286,12 @@ const Inmortales = () => {
 
               {hayFiltrosActivos && (
                 <button onClick={limpiarFiltros} style={styles.btnLimpiar}>
-                  ✖ Limpiar filtros
+                  <RotateCcw size={14} style={{ marginRight: '5px', verticalAlign: 'middle' }} /> Limpiar filtros
                 </button>
               )}
             </div>
           </div>
 
-          {/* Grid / estados */}
           <div style={styles.grid}>
             {loading ? (
               [...Array(6)].map((_, i) => (
@@ -295,7 +303,7 @@ const Inmortales = () => {
               ))
             ) : error ? (
               <div style={styles.errorState}>
-                <div style={styles.errorIcon}>⚠</div>
+                <div style={styles.errorIcon}><AlertTriangle size={48} /></div>
                 <h3 style={{ margin: '10px 0' }}>Error al cargar</h3>
                 <p>{error}</p>
                 <button onClick={obtenerInmortales} style={styles.btnReintentar}>
@@ -304,7 +312,7 @@ const Inmortales = () => {
               </div>
             ) : productosFiltrados.length === 0 ? (
               <div style={styles.noResult}>
-                <div style={styles.noResultIcon}>⚔</div>
+                <div style={styles.noResultIcon}><Sword size={64} opacity={0.3} /></div>
                 <h3 style={{ margin: '10px 0', color: 'white' }}>
                   No se encontraron inmortales
                 </h3>
@@ -327,11 +335,10 @@ const Inmortales = () => {
 };
 
 // =============================================================================
-// ESTILOS
+// ESTILOS (Sin cambios)
 // =============================================================================
 const styles = {
   mainWrapper: { position: 'relative', minHeight: '100vh', backgroundColor: '#000', overflow: 'hidden' },
-
   swiperWrapper: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 },
   swiper: { width: '100%', height: '100%' },
   slideBackground: {
@@ -348,9 +355,7 @@ const styles = {
     background:
       'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(10,10,15,0.85) 100%)',
   },
-
   contentLayer: { position: 'relative', zIndex: 1, padding: '80px 5% 100px' },
-
   header: { textAlign: 'center', marginBottom: '50px', animation: 'fadeInUp 0.8s ease' },
   badge: {
     display: 'inline-block',
@@ -388,7 +393,6 @@ const styles = {
     textShadow: '1px 1px 3px black',
     fontSize: '1.1rem',
   },
-
   statsRow: { display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px', marginTop: '30px', flexWrap: 'wrap' },
   statItem: { display: 'flex', flexDirection: 'column', alignItems: 'center' },
   statNumber: {
@@ -399,7 +403,6 @@ const styles = {
   },
   statLabel: { fontSize: '0.75rem', letterSpacing: '2px', color: '#888', textTransform: 'uppercase', marginTop: '4px' },
   statDivider: { width: '1px', height: '40px', background: 'rgba(255,255,255,0.15)' },
-
   filterBar: {
     background: 'rgba(10, 10, 12, 0.85)',
     backdropFilter: 'blur(15px)',
@@ -419,7 +422,14 @@ const styles = {
     marginBottom: '15px',
   },
   filterCol: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { fontSize: '0.7rem', color: 'var(--neon-cyan)', fontWeight: 'bold', letterSpacing: '2px' },
+  label: { 
+    fontSize: '0.7rem', 
+    color: 'var(--neon-cyan)', 
+    fontWeight: 'bold', 
+    letterSpacing: '2px',
+    display: 'flex',
+    alignItems: 'center'
+  },
   input: {
     padding: '10px 14px',
     borderRadius: '8px',
@@ -453,8 +463,9 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.8rem',
     fontWeight: 'bold',
+    display: 'flex',
+    alignItems: 'center'
   },
-
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -462,7 +473,6 @@ const styles = {
     maxWidth: '1200px',
     margin: '0 auto',
   },
-
   skeleton: { background: 'rgba(20, 20, 22, 0.6)', borderRadius: '15px', padding: '20px', height: '380px' },
   skeletonImg: {
     width: '100%',
@@ -482,7 +492,6 @@ const styles = {
     borderRadius: '5px',
     marginBottom: '10px',
   },
-
   noResult: {
     gridColumn: '1/-1',
     textAlign: 'center',
@@ -493,7 +502,7 @@ const styles = {
     backdropFilter: 'blur(10px)',
     border: '1px solid rgba(255,255,255,0.05)',
   },
-  noResultIcon: { fontSize: '4rem', marginBottom: '10px' },
+  noResultIcon: { marginBottom: '10px', display: 'flex', justifyContent: 'center' },
   errorState: {
     gridColumn: '1/-1',
     textAlign: 'center',
@@ -503,7 +512,7 @@ const styles = {
     borderRadius: '20px',
     border: '1px solid rgba(231, 76, 60, 0.3)',
   },
-  errorIcon: { fontSize: '3rem' },
+  errorIcon: { marginBottom: '10px', display: 'flex', justifyContent: 'center' },
   btnReintentar: {
     marginTop: '15px',
     padding: '10px 25px',

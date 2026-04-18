@@ -27,10 +27,11 @@ const API_URL =
   import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_ARCANOS = [
-  '/fondos/arcanos1.png',
-  '/fondos/arcanos2.png',
-  '/fondos/arcanos3.png',
+  '/public/imagen4.jpeg',
+  '/public/imagen3.jpeg',
+  '/public/imagen7.jpeg',
 ];
+
 
 const HEROES_ARCANOS = [
   'Lina',
