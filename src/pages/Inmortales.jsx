@@ -15,9 +15,9 @@ import 'swiper/css/effect-fade';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_INMORTALES = [
-  '/public/imagen4.jpeg',
-  '/public/imagen3.jpeg',
-  '/public/imagen7.jpeg',
+  '/imagen4.jpeg',
+  '/imagen3.jpeg',
+  '/imagen7.jpeg',
 ];
 
 const HEROES_CON_INMORTALES = [

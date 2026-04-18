@@ -15,9 +15,9 @@ import 'swiper/css/effect-fade';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
 
 const FONDOS_CLIMAS = [
-  '/public/imagen4.jpeg',
-  '/public/imagen3.jpeg',
-  '/public/imagen7.jpeg',
+  '/imagen2.jpeg',
+  '/imagen1.jpeg',
+  '/imagen7.jpeg',
 ];
 
 const TIPOS_CLIMAS = [
