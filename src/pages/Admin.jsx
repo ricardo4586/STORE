@@ -1,22 +1,27 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+// src/pages/Admin.jsx
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Search, 
-  PlusCircle, 
-  Pencil, 
-  Trash2, 
-  LogOut, 
-  ImageUp, 
-  CheckCircle, 
-  XCircle, 
-  Filter, 
-  Package, 
-  DollarSign, 
+import {
+  Search,
+  PlusCircle,
+  Pencil,
+  Trash2,
+  LogOut,
+  ImageUp,
+  CheckCircle,
+  XCircle,
+  Filter,
+  Package,
+  DollarSign,
   AlertCircle,
-  RefreshCcw,
-  Loader2
+  Loader2,
+  X,
+  Lightbulb,
+  Upload,
+  Save,
 } from 'lucide-react';
+
 // =============================================================================
 // CONFIGURACIÓN
 // =============================================================================
@@ -32,50 +37,33 @@ const CATEGORIAS = {
 };
 
 const RAREZAS_SUGERIDAS = [
-  'Común',
-  'Poco Común',
-  'Raro',
-  'Mítico',
-  'Legendario',
-  'Inmortal',
-  'Arcano',
-  'Ancestral',
+  'Común', 'Poco Común', 'Raro', 'Mítico', 'Legendario', 'Inmortal', 'Arcano', 'Ancestral',
 ];
 
 const OPCIONES_ORDEN = {
-  recientes: { label: 'Más recientes', key: 'createdAt', dir: 'desc' },
-  nombre_asc: { label: 'Nombre (A-Z)', key: 'nombre', dir: 'asc' },
-  nombre_desc: { label: 'Nombre (Z-A)', key: 'nombre', dir: 'desc' },
-  precio_asc: { label: 'Precio (Menor a Mayor)', key: 'precio', dir: 'asc' },
-  precio_desc: { label: 'Precio (Mayor a Menor)', key: 'precio', dir: 'desc' },
-  heroe_asc: { label: 'Héroe (A-Z)', key: 'heroe', dir: 'asc' },
+  recientes:    { label: 'Más recientes',           key: 'createdAt', dir: 'desc' },
+  nombre_asc:   { label: 'Nombre (A-Z)',            key: 'nombre',    dir: 'asc' },
+  nombre_desc:  { label: 'Nombre (Z-A)',            key: 'nombre',    dir: 'desc' },
+  precio_asc:   { label: 'Precio (Menor a Mayor)',  key: 'precio',    dir: 'asc' },
+  precio_desc:  { label: 'Precio (Mayor a Menor)',  key: 'precio',    dir: 'desc' },
+  heroe_asc:    { label: 'Héroe (A-Z)',             key: 'heroe',     dir: 'asc' },
 };
 
 const FORM_INICIAL = {
-  nombre: '',
-  heroe: '',
-  precio: '',
-  rareza: '',
-  imagenUrl: '',
-  categoria: 'sets',
-  stock: true,
+  nombre: '', heroe: '', precio: '', rareza: '',
+  imagenUrl: '', categoria: 'sets', stock: true,
 };
 
 const FILTROS_INICIALES = {
-  busqueda: '',
-  categoria: 'todas',
-  rareza: '',
-  precioMin: '',
-  precioMax: '',
-  stock: 'todos',
-  orden: 'recientes',
+  busqueda: '', categoria: 'todas', rareza: '',
+  precioMin: '', precioMax: '', stock: 'todos', orden: 'recientes',
 };
 
 const opcionesPorCategoria = {
-  arcanos: ["Crystal Maiden", "Dread Retribution", "Faceless Void", "Io", "Juggernaut", "Lina", "Monkey King", "Ogre Magi", "Phantom Assassin", "Pudge", "Queen of Pain", "Razor", "Rubick", "Shadow Fiend", "Spectre", "Techies", "Windranger", "Wraith King", "Zeus"].sort(),
-  climas: ["Ash (ceniza)", "Aurora", "Autumn", "Harvest", "Moonbeam", "Pestilence", "Rain", "Sirocco", "Snow", "Spring"],
-  inmortales: ["Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe", "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden", "Dark Seer", "Dark Willow", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger", "Earth Spirit", "Earthshaker", "Ember Spirit", "Enchantress", "Enigma", "Faceless Void", "Gyrocopter", "Huskar", "Invoker", "Jakiro", "Juggernaut", "Keeper of the Light", "Kunkka", "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Luna", "Magnus", "Mars", "Medusa", "Meepo", "Monkey King", "Morphling", "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Ogre Magi", "Omniknight", "Oracle", "Outworld Destroyer", "Phantom Assassin", "Phantom Lancer", "Puck", "Pugna", "Pudge", "Queen of Pain", "Razor", "Riki", "Rubick", "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven", "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk", "Underlord", "Undying", "Ursa", "Vengeful Spirit", "Venomancer", "Viper", "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King", "Zeus"].sort(),
-  sets: ["Abaddon", "Alchemist", "Ancient Apparition", "Anti-Mage", "Arc Warden", "Axe", "Bane", "Batrider", "Beastmaster", "Bloodseeker", "Bounty Hunter", "Brewmaster", "Bristleback", "Broodmother", "Centaur Warrunner", "Chaos Knight", "Chen", "Clinkz", "Clockwerk", "Crystal Maiden", "Dark Seer", "Dark Willow", "Dawnbreaker", "Dazzle", "Death Prophet", "Disruptor", "Doom", "Dragon Knight", "Drow Ranger", "Earth Spirit", "Earthshaker", "Elder Titan", "Ember Spirit", "Enchantress", "Enigma", "Faceless Void", "Grimstroke", "Gyrocopter", "Hoodwink", "Huskar", "Invoker", "Io", "Jakiro", "Juggernaut", "Keeper of the Light", "Kunkka", "Legion Commander", "Leshrac", "Lich", "Lifestealer", "Lina", "Lion", "Lone Druid", "Luna", "Lycan", "Magnus", "Marci", "Mars", "Medusa", "Meepo", "Mirana", "Monkey King", "Morphling", "Muerta", "Naga Siren", "Nature's Prophet", "Necrophos", "Night Stalker", "Nyx Assassin", "Ogre Magi", "Omniknight", "Oracle", "Outworld Destroyer", "Pangolier", "Phantom Assassin", "Phantom Lancer", "Phoenix", "Primal Beast", "Puck", "Pudge", "Pugna", "Queen of Pain", "Razor", "Riki", "Rubick", "Sand King", "Shadow Demon", "Shadow Fiend", "Shadow Shaman", "Silencer", "Skywrath Mage", "Slardar", "Slark", "Snapfire", "Sniper", "Spectre", "Spirit Breaker", "Storm Spirit", "Sven", "Techies", "Templar Assassin", "Terrorblade", "Tidehunter", "Timbersaw", "Tinker", "Tiny", "Treant Protector", "Troll Warlord", "Tusk", "Underlord", "Undying", "Ursa", "Vengeful Spirit", "Venomancer", "Viper", "Visage", "Void Spirit", "Warlock", "Weaver", "Windranger", "Winter Wyvern", "Witch Doctor", "Wraith King", "Zeus"].sort(),
+  arcanos: ["Crystal Maiden","Dread Retribution","Faceless Void","Io","Juggernaut","Lina","Monkey King","Ogre Magi","Phantom Assassin","Pudge","Queen of Pain","Razor","Rubick","Shadow Fiend","Spectre","Techies","Windranger","Wraith King","Zeus"].sort(),
+  climas: ["Ash (ceniza)","Aurora","Autumn","Harvest","Moonbeam","Pestilence","Rain","Sirocco","Snow","Spring"],
+  inmortales: ["Abaddon","Alchemist","Ancient Apparition","Anti-Mage","Arc Warden","Axe","Bane","Batrider","Beastmaster","Bloodseeker","Bounty Hunter","Brewmaster","Bristleback","Centaur Warrunner","Chaos Knight","Chen","Clinkz","Clockwerk","Crystal Maiden","Dark Seer","Dark Willow","Dazzle","Death Prophet","Disruptor","Doom","Dragon Knight","Drow Ranger","Earth Spirit","Earthshaker","Ember Spirit","Enchantress","Enigma","Faceless Void","Gyrocopter","Huskar","Invoker","Jakiro","Juggernaut","Keeper of the Light","Kunkka","Legion Commander","Leshrac","Lich","Lifestealer","Lina","Lion","Luna","Magnus","Mars","Medusa","Meepo","Monkey King","Morphling","Naga Siren","Nature's Prophet","Necrophos","Night Stalker","Ogre Magi","Omniknight","Oracle","Outworld Destroyer","Phantom Assassin","Phantom Lancer","Puck","Pugna","Pudge","Queen of Pain","Razor","Riki","Rubick","Sand King","Shadow Demon","Shadow Fiend","Shadow Shaman","Silencer","Skywrath Mage","Slardar","Slark","Sniper","Spectre","Spirit Breaker","Storm Spirit","Sven","Techies","Templar Assassin","Terrorblade","Tidehunter","Tinker","Tiny","Treant Protector","Troll Warlord","Tusk","Underlord","Undying","Ursa","Vengeful Spirit","Venomancer","Viper","Warlock","Weaver","Windranger","Winter Wyvern","Witch Doctor","Wraith King","Zeus"].sort(),
+  sets: ["Abaddon","Alchemist","Ancient Apparition","Anti-Mage","Arc Warden","Axe","Bane","Batrider","Beastmaster","Bloodseeker","Bounty Hunter","Brewmaster","Bristleback","Broodmother","Centaur Warrunner","Chaos Knight","Chen","Clinkz","Clockwerk","Crystal Maiden","Dark Seer","Dark Willow","Dawnbreaker","Dazzle","Death Prophet","Disruptor","Doom","Dragon Knight","Drow Ranger","Earth Spirit","Earthshaker","Elder Titan","Ember Spirit","Enchantress","Enigma","Faceless Void","Grimstroke","Gyrocopter","Hoodwink","Huskar","Invoker","Io","Jakiro","Juggernaut","Keeper of the Light","Kunkka","Legion Commander","Leshrac","Lich","Lifestealer","Lina","Lion","Lone Druid","Luna","Lycan","Magnus","Marci","Mars","Medusa","Meepo","Mirana","Monkey King","Morphling","Muerta","Naga Siren","Nature's Prophet","Necrophos","Night Stalker","Nyx Assassin","Ogre Magi","Omniknight","Oracle","Outworld Destroyer","Pangolier","Phantom Assassin","Phantom Lancer","Phoenix","Primal Beast","Puck","Pudge","Pugna","Queen of Pain","Razor","Riki","Rubick","Sand King","Shadow Demon","Shadow Fiend","Shadow Shaman","Silencer","Skywrath Mage","Slardar","Slark","Snapfire","Sniper","Spectre","Spirit Breaker","Storm Spirit","Sven","Techies","Templar Assassin","Terrorblade","Tidehunter","Timbersaw","Tinker","Tiny","Treant Protector","Troll Warlord","Tusk","Underlord","Undying","Ursa","Vengeful Spirit","Venomancer","Viper","Visage","Void Spirit","Warlock","Weaver","Windranger","Winter Wyvern","Witch Doctor","Wraith King","Zeus"].sort(),
 };
 
 // =============================================================================
@@ -101,7 +89,7 @@ api.interceptors.request.use((config) => {
 });
 
 // =============================================================================
-// COMPONENTE: TOAST
+// TOAST
 // =============================================================================
 const Toast = ({ mensaje, tipo, onClose }) => {
   useEffect(() => {
@@ -111,16 +99,24 @@ const Toast = ({ mensaje, tipo, onClose }) => {
   }, [mensaje, onClose]);
 
   if (!mensaje) return null;
-  const colores = { success: '#2ecc71', error: '#e74c3c', info: '#3498db' };
+
+  const config = {
+    success: { bg: '#2ecc71', Icon: CheckCircle },
+    error:   { bg: '#e74c3c', Icon: AlertCircle },
+    info:    { bg: '#3498db', Icon: AlertCircle },
+  };
+  const { bg, Icon } = config[tipo] || config.info;
+
   return (
-    <div style={{ ...styles.toast, backgroundColor: colores[tipo] || colores.info }}>
-      {mensaje}
+    <div style={{ ...styles.toast, backgroundColor: bg }}>
+      <Icon size={18} />
+      <span>{mensaje}</span>
     </div>
   );
 };
 
 // =============================================================================
-// COMPONENTE: BARRA DE FILTROS
+// BARRA DE FILTROS
 // =============================================================================
 const BarraFiltros = ({ filtros, setFiltros, totalResultados, totalProductos, onLimpiar }) => {
   const hayFiltrosActivos =
@@ -134,7 +130,10 @@ const BarraFiltros = ({ filtros, setFiltros, totalResultados, totalProductos, on
   return (
     <div style={styles.filtrosContainer}>
       <div style={styles.filtrosHeader}>
-        <h3 style={{ margin: 0 }}>🔎 Filtros</h3>
+        <h3 style={styles.filtrosTitle}>
+          <Filter size={18} />
+          <span>Filtros</span>
+        </h3>
         <span style={styles.contadorResultados}>
           {totalResultados} de {totalProductos} items
         </span>
@@ -143,13 +142,20 @@ const BarraFiltros = ({ filtros, setFiltros, totalResultados, totalProductos, on
       <div style={styles.filtrosGrid}>
         <div style={styles.filtroItem}>
           <label style={styles.label}>Buscar</label>
-          <input
-            type="text"
-            placeholder="Nombre, héroe o rareza..."
-            value={filtros.busqueda}
-            onChange={(e) => setFiltros({ ...filtros, busqueda: e.target.value })}
-            style={styles.input}
-          />
+          <div style={{ position: 'relative' }}>
+            <Search
+              size={14}
+              color="#666"
+              style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)' }}
+            />
+            <input
+              type="text"
+              placeholder="Nombre, héroe o rareza..."
+              value={filtros.busqueda}
+              onChange={(e) => setFiltros({ ...filtros, busqueda: e.target.value })}
+              style={{ ...styles.input, paddingLeft: 32 }}
+            />
+          </div>
         </div>
 
         <div style={styles.filtroItem}>
@@ -234,7 +240,8 @@ const BarraFiltros = ({ filtros, setFiltros, totalResultados, totalProductos, on
 
       {hayFiltrosActivos && (
         <button onClick={onLimpiar} style={styles.btnLimpiar}>
-          ✖ Limpiar filtros
+          <X size={14} />
+          Limpiar filtros
         </button>
       )}
     </div>
@@ -242,7 +249,7 @@ const BarraFiltros = ({ filtros, setFiltros, totalResultados, totalProductos, on
 };
 
 // =============================================================================
-// COMPONENTE: INPUT DE IMAGEN POR URL (ImgBB)
+// CAMPO IMAGEN URL (ImgBB)
 // =============================================================================
 const CampoImagenUrl = ({ valor, onChange }) => {
   const [estadoImagen, setEstadoImagen] = useState('idle');
@@ -267,7 +274,8 @@ const CampoImagenUrl = ({ valor, onChange }) => {
           style={styles.btnImgBB}
           title="Abre ImgBB en otra pestaña"
         >
-          📤 Subir a ImgBB
+          <Upload size={12} />
+          Subir a ImgBB
         </button>
       </div>
 
@@ -286,7 +294,8 @@ const CampoImagenUrl = ({ valor, onChange }) => {
       />
 
       <p style={styles.helperText}>
-        💡 Sube tu imagen en{' '}
+        <Lightbulb size={12} style={{ verticalAlign: 'middle', marginRight: 4 }} />
+        Sube tu imagen en{' '}
         <a href={IMGBB_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--neon-cyan)' }}>
           imgbb.com
         </a>
@@ -303,10 +312,14 @@ const CampoImagenUrl = ({ valor, onChange }) => {
             onError={() => setEstadoImagen('error')}
           />
           {estadoImagen === 'error' && (
-            <div style={styles.previewError}>⚠ No se pudo cargar la imagen</div>
+            <div style={styles.previewError}>
+              <AlertCircle size={12} /> No se pudo cargar la imagen
+            </div>
           )}
           {estadoImagen === 'cargando' && (
-            <div style={styles.previewLoading}>⏳ Cargando...</div>
+            <div style={styles.previewLoading}>
+              <Loader2 size={12} className="spin" /> Cargando...
+            </div>
           )}
         </div>
       )}
@@ -507,40 +520,77 @@ const Admin = () => {
 
   return (
     <div style={styles.adminContainer}>
+      {/* Keyframe para el Loader2 */}
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spin { animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+      `}</style>
+
       <Toast mensaje={toast.mensaje} tipo={toast.tipo} onClose={cerrarToast} />
 
       <header style={styles.header}>
         <h1 style={styles.title}>
           Panel de Control <span style={{ color: 'var(--neon-cyan)' }}>PANTERA</span>
         </h1>
-        <button onClick={cerrarSesion} style={styles.btnLogOut}>CERRAR SESIÓN</button>
+        <button onClick={cerrarSesion} style={styles.btnLogOut}>
+          <LogOut size={16} />
+          CERRAR SESIÓN
+        </button>
       </header>
 
+      {/* STATS */}
       <div style={styles.statsGrid}>
         <div style={styles.statCard}>
-          <div style={styles.statLabel}>Total</div>
-          <div style={styles.statValue}>{stats.total}</div>
+          <div style={styles.statIconWrap}>
+            <Package size={20} color="var(--neon-cyan)" />
+          </div>
+          <div>
+            <div style={styles.statLabel}>Total</div>
+            <div style={styles.statValue}>{stats.total}</div>
+          </div>
         </div>
         <div style={styles.statCard}>
-          <div style={styles.statLabel}>Disponibles</div>
-          <div style={{ ...styles.statValue, color: '#2ecc71' }}>{stats.disponibles}</div>
+          <div style={styles.statIconWrap}>
+            <CheckCircle size={20} color="#2ecc71" />
+          </div>
+          <div>
+            <div style={styles.statLabel}>Disponibles</div>
+            <div style={{ ...styles.statValue, color: '#2ecc71' }}>{stats.disponibles}</div>
+          </div>
         </div>
         <div style={styles.statCard}>
-          <div style={styles.statLabel}>Agotados</div>
-          <div style={{ ...styles.statValue, color: '#e74c3c' }}>{stats.agotados}</div>
+          <div style={styles.statIconWrap}>
+            <XCircle size={20} color="#e74c3c" />
+          </div>
+          <div>
+            <div style={styles.statLabel}>Agotados</div>
+            <div style={{ ...styles.statValue, color: '#e74c3c' }}>{stats.agotados}</div>
+          </div>
         </div>
         <div style={styles.statCard}>
-          <div style={styles.statLabel}>Valor catálogo</div>
-          <div style={{ ...styles.statValue, color: 'var(--neon-cyan)' }}>
-            ${stats.valorTotal.toFixed(2)}
+          <div style={styles.statIconWrap}>
+            <DollarSign size={20} color="var(--neon-cyan)" />
+          </div>
+          <div>
+            <div style={styles.statLabel}>Valor catálogo</div>
+            <div style={{ ...styles.statValue, color: 'var(--neon-cyan)' }}>
+              ${stats.valorTotal.toFixed(2)}
+            </div>
           </div>
         </div>
       </div>
 
       <div style={styles.layout}>
+        {/* FORMULARIO */}
         <form onSubmit={guardarProducto} style={styles.form} noValidate>
-          <h3 style={{ color: editandoId ? '#ffd700' : 'var(--neon-cyan)', margin: 0 }}>
-            {editandoId ? '✏️ Modo Edición' : '➕ Nuevo Registro'}
+          <h3 style={{
+            ...styles.formTitle,
+            color: editandoId ? '#ffd700' : 'var(--neon-cyan)',
+          }}>
+            {editandoId
+              ? <><Pencil size={18} /> Modo Edición</>
+              : <><PlusCircle size={18} /> Nuevo Registro</>
+            }
           </h3>
 
           <div>
@@ -632,7 +682,7 @@ const Admin = () => {
               type="checkbox"
               checked={form.stock}
               onChange={(e) => manejarCambio('stock', e.target.checked)}
-              style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+              style={{ width: 18, height: 18, cursor: 'pointer' }}
             />
             <span>Disponible en stock</span>
           </label>
@@ -646,16 +696,23 @@ const Admin = () => {
               cursor: guardando ? 'not-allowed' : 'pointer',
             }}
           >
-            {guardando ? 'Guardando...' : editandoId ? 'ACTUALIZAR CAMBIOS' : 'GUARDAR EN BASE'}
+            {guardando ? (
+              <><Loader2 size={16} className="spin" /> Guardando...</>
+            ) : editandoId ? (
+              <><Save size={16} /> ACTUALIZAR CAMBIOS</>
+            ) : (
+              <><Save size={16} /> GUARDAR EN BASE</>
+            )}
           </button>
 
           {editandoId && (
             <button type="button" onClick={cancelarEdicion} style={styles.btnCancel}>
-              CANCELAR
+              <X size={14} /> CANCELAR
             </button>
           )}
         </form>
 
+        {/* TABLA */}
         <div style={styles.tableWrapper}>
           <BarraFiltros
             filtros={filtros}
@@ -665,14 +722,25 @@ const Admin = () => {
             onLimpiar={limpiarFiltros}
           />
 
-          <div style={{ maxHeight: '600px', overflowY: 'auto', marginTop: '20px' }}>
+          <div style={{ maxHeight: 600, overflowY: 'auto', marginTop: 20 }}>
             {cargando ? (
-              <div style={styles.estado}>⏳ Cargando inventario...</div>
+              <div style={styles.estado}>
+                <Loader2 size={28} className="spin" color="var(--neon-cyan)" />
+                <div>Cargando inventario...</div>
+              </div>
             ) : productosFiltrados.length === 0 ? (
               <div style={styles.estado}>
-                {productos.length === 0
-                  ? '📦 El inventario está vacío. Crea tu primer producto.'
-                  : '🔍 No se encontraron items con los filtros aplicados.'}
+                {productos.length === 0 ? (
+                  <>
+                    <Package size={32} color="#555" />
+                    <div>El inventario está vacío. Crea tu primer producto.</div>
+                  </>
+                ) : (
+                  <>
+                    <Search size={32} color="#555" />
+                    <div>No se encontraron items con los filtros aplicados.</div>
+                  </>
+                )}
               </div>
             ) : (
               <table style={styles.table}>
@@ -716,19 +784,22 @@ const Admin = () => {
                           }}
                           title="Clic para cambiar"
                         >
-                          {p.stock ? '✓ Disponible' : '✖ Agotado'}
+                          {p.stock
+                            ? <><CheckCircle size={12} /> Disponible</>
+                            : <><XCircle size={12} /> Agotado</>
+                          }
                         </button>
                       </td>
                       <td style={styles.actions}>
                         <button onClick={() => prepararEdicion(p)} style={styles.btnEdit} title="Editar">
-                          ✏️
+                          <Pencil size={14} />
                         </button>
                         <button
                           onClick={() => eliminarProducto(p._id, p.nombre)}
                           style={styles.btnDel}
                           title="Eliminar"
                         >
-                          🗑️
+                          <Trash2 size={14} />
                         </button>
                       </td>
                     </tr>
@@ -748,49 +819,52 @@ const Admin = () => {
 // =============================================================================
 const styles = {
   adminContainer: { padding: '80px 5%', backgroundColor: 'var(--dark-bg)', minHeight: '100vh', color: 'white' },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', flexWrap: 'wrap', gap: '15px' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30, flexWrap: 'wrap', gap: 15 },
   title: { margin: 0 },
-  btnLogOut: { backgroundColor: '#ff4d4d', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' },
-  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '15px', marginBottom: '30px' },
-  statCard: { background: '#151517', padding: '20px', borderRadius: '12px', border: '1px solid #333' },
-  statLabel: { fontSize: '0.8rem', color: '#888', textTransform: 'uppercase', letterSpacing: '0.5px' },
-  statValue: { fontSize: '2rem', fontWeight: 'bold', marginTop: '8px', color: 'white' },
-  layout: { display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '30px' },
-  form: { background: '#151517', padding: '25px', borderRadius: '15px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #333', position: 'sticky', top: '100px', height: 'fit-content' },
-  label: { fontSize: '0.75rem', color: '#888', marginBottom: '4px', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block' },
-  input: { width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #333', backgroundColor: '#000', color: 'white', outline: 'none', boxSizing: 'border-box', fontSize: '0.9rem' },
-  checkboxRow: { display: 'flex', alignItems: 'center', gap: '10px', fontSize: '0.9rem', cursor: 'pointer', padding: '8px 0' },
-  btnSave: { padding: '15px', backgroundColor: 'var(--neon-cyan)', color: 'black', fontWeight: 'bold', border: 'none', borderRadius: '8px', marginTop: '10px' },
-  btnUpdate: { padding: '15px', backgroundColor: '#ffd700', color: 'black', fontWeight: 'bold', border: 'none', borderRadius: '8px', marginTop: '10px' },
-  btnCancel: { padding: '10px', backgroundColor: '#333', color: 'white', border: 'none', borderRadius: '8px', cursor: 'pointer', marginTop: '5px' },
-  imgBBHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' },
-  btnImgBB: { backgroundColor: 'var(--neon-cyan)', color: 'black', border: 'none', padding: '4px 10px', borderRadius: '6px', cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' },
-  helperText: { fontSize: '0.75rem', color: '#777', marginTop: '6px', marginBottom: 0 },
-  previewContainer: { textAlign: 'center', marginTop: '10px' },
-  preview: { width: '140px', height: '100px', objectFit: 'cover', borderRadius: '8px', border: '1px solid var(--neon-cyan)' },
-  previewError: { color: '#e74c3c', fontSize: '0.75rem', marginTop: '6px' },
-  previewLoading: { color: '#888', fontSize: '0.75rem', marginTop: '6px' },
-  tableWrapper: { background: '#151517', padding: '25px', borderRadius: '15px', border: '1px solid #333' },
-  filtrosContainer: { backgroundColor: '#1a1a1c', padding: '20px', borderRadius: '10px', border: '1px solid #2a2a2c' },
-  filtrosHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' },
-  contadorResultados: { fontSize: '0.85rem', color: '#888', backgroundColor: '#000', padding: '4px 12px', borderRadius: '20px', border: '1px solid #333' },
-  filtrosGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '12px' },
+  btnLogOut: { display: 'inline-flex', alignItems: 'center', gap: 8, backgroundColor: '#ff4d4d', color: 'white', border: 'none', padding: '10px 20px', borderRadius: 8, cursor: 'pointer', fontWeight: 'bold' },
+  statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 15, marginBottom: 30 },
+  statCard: { background: '#151517', padding: 20, borderRadius: 12, border: '1px solid #333', display: 'flex', alignItems: 'center', gap: 14 },
+  statIconWrap: { width: 40, height: 40, borderRadius: 10, background: 'rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  statLabel: { fontSize: '0.75rem', color: '#888', textTransform: 'uppercase', letterSpacing: 0.5 },
+  statValue: { fontSize: '1.8rem', fontWeight: 'bold', marginTop: 2, color: 'white', lineHeight: 1 },
+  layout: { display: 'grid', gridTemplateColumns: '1fr 2fr', gap: 30 },
+  form: { background: '#151517', padding: 25, borderRadius: 15, display: 'flex', flexDirection: 'column', gap: 12, border: '1px solid #333', position: 'sticky', top: 100, height: 'fit-content' },
+  formTitle: { display: 'flex', alignItems: 'center', gap: 8, margin: 0 },
+  label: { fontSize: '0.75rem', color: '#888', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5, display: 'block' },
+  input: { width: '100%', padding: 10, borderRadius: 8, border: '1px solid #333', backgroundColor: '#000', color: 'white', outline: 'none', boxSizing: 'border-box', fontSize: '0.9rem' },
+  checkboxRow: { display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.9rem', cursor: 'pointer', padding: '8px 0' },
+  btnSave: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 15, backgroundColor: 'var(--neon-cyan)', color: 'black', fontWeight: 'bold', border: 'none', borderRadius: 8, marginTop: 10 },
+  btnUpdate: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: 15, backgroundColor: '#ffd700', color: 'black', fontWeight: 'bold', border: 'none', borderRadius: 8, marginTop: 10 },
+  btnCancel: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6, padding: 10, backgroundColor: '#333', color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer', marginTop: 5 },
+  imgBBHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  btnImgBB: { display: 'inline-flex', alignItems: 'center', gap: 4, backgroundColor: 'var(--neon-cyan)', color: 'black', border: 'none', padding: '4px 10px', borderRadius: 6, cursor: 'pointer', fontSize: '0.7rem', fontWeight: 'bold' },
+  helperText: { fontSize: '0.75rem', color: '#777', marginTop: 6, marginBottom: 0 },
+  previewContainer: { textAlign: 'center', marginTop: 10 },
+  preview: { width: 140, height: 100, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--neon-cyan)' },
+  previewError: { display: 'inline-flex', alignItems: 'center', gap: 4, color: '#e74c3c', fontSize: '0.75rem', marginTop: 6 },
+  previewLoading: { display: 'inline-flex', alignItems: 'center', gap: 4, color: '#888', fontSize: '0.75rem', marginTop: 6 },
+  tableWrapper: { background: '#151517', padding: 25, borderRadius: 15, border: '1px solid #333' },
+  filtrosContainer: { backgroundColor: '#1a1a1c', padding: 20, borderRadius: 10, border: '1px solid #2a2a2c' },
+  filtrosHeader: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 },
+  filtrosTitle: { display: 'flex', alignItems: 'center', gap: 8, margin: 0, color: 'var(--neon-cyan)', fontSize: '1rem' },
+  contadorResultados: { fontSize: '0.85rem', color: '#888', backgroundColor: '#000', padding: '4px 12px', borderRadius: 20, border: '1px solid #333' },
+  filtrosGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 },
   filtroItem: { display: 'flex', flexDirection: 'column' },
-  btnLimpiar: { marginTop: '15px', padding: '8px 16px', backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b', borderRadius: '6px', cursor: 'pointer', fontSize: '0.85rem' },
+  btnLimpiar: { display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 15, padding: '8px 16px', backgroundColor: 'transparent', color: '#ff6b6b', border: '1px solid #ff6b6b', borderRadius: 6, cursor: 'pointer', fontSize: '0.85rem' },
   table: { width: '100%', borderCollapse: 'collapse' },
-  thead: { borderBottom: '2px solid #333', color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.5px' },
+  thead: { borderBottom: '2px solid #333', color: '#888', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: 0.5 },
   th: { padding: '12px 10px', textAlign: 'left', position: 'sticky', top: 0, backgroundColor: '#151517', zIndex: 1 },
   tr: { borderBottom: '1px solid #222' },
-  tdItem: { padding: '10px', display: 'flex', alignItems: 'center', gap: '10px' },
-  td: { padding: '10px', fontSize: '0.85rem', color: '#ccc' },
-  thumbnail: { width: '40px', height: '30px', objectFit: 'cover', borderRadius: '3px' },
-  badge: { backgroundColor: '#2a2a2c', color: '#aaa', padding: '3px 10px', borderRadius: '12px', fontSize: '0.75rem', textTransform: 'capitalize' },
-  stockBadge: { border: 'none', color: 'white', padding: '4px 10px', borderRadius: '12px', fontSize: '0.7rem', fontWeight: 'bold', cursor: 'pointer' },
-  actions: { display: 'flex', gap: '8px', padding: '10px' },
-  btnEdit: { backgroundColor: '#3498db', border: 'none', padding: '8px 10px', borderRadius: '5px', cursor: 'pointer' },
-  btnDel: { backgroundColor: '#e74c3c', border: 'none', padding: '8px 10px', borderRadius: '5px', cursor: 'pointer' },
-  estado: { padding: '60px 20px', textAlign: 'center', color: '#666', fontSize: '1rem' },
-  toast: { position: 'fixed', top: '20px', right: '20px', padding: '15px 25px', borderRadius: '8px', color: 'white', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.4)' },
+  tdItem: { padding: 10, display: 'flex', alignItems: 'center', gap: 10 },
+  td: { padding: 10, fontSize: '0.85rem', color: '#ccc' },
+  thumbnail: { width: 40, height: 30, objectFit: 'cover', borderRadius: 3 },
+  badge: { backgroundColor: '#2a2a2c', color: '#aaa', padding: '3px 10px', borderRadius: 12, fontSize: '0.75rem', textTransform: 'capitalize' },
+  stockBadge: { display: 'inline-flex', alignItems: 'center', gap: 4, border: 'none', color: 'white', padding: '4px 10px', borderRadius: 12, fontSize: '0.7rem', fontWeight: 'bold', cursor: 'pointer' },
+  actions: { display: 'flex', gap: 8, padding: 10 },
+  btnEdit: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#3498db', border: 'none', padding: '8px 10px', borderRadius: 5, cursor: 'pointer', color: 'white' },
+  btnDel: { display: 'inline-flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#e74c3c', border: 'none', padding: '8px 10px', borderRadius: 5, cursor: 'pointer', color: 'white' },
+  estado: { padding: '60px 20px', textAlign: 'center', color: '#666', fontSize: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 },
+  toast: { display: 'inline-flex', alignItems: 'center', gap: 10, position: 'fixed', top: 20, right: 20, padding: '15px 25px', borderRadius: 8, color: 'white', fontWeight: 'bold', zIndex: 9999, boxShadow: '0 4px 12px rgba(0,0,0,0.4)' },
 };
 
 export default Admin;

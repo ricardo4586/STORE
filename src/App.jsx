@@ -30,7 +30,7 @@ function App() {
         <div style={{ paddingTop: '80px' }}> 
           <Routes>
             <Route path="/" element={<Inicio />} />
-            <Route path="/sets cache" element={<Sets />} />
+            <Route path="/sets" element={<Sets />} />
             <Route path="/climas" element={<Climas />} />
             <Route path="/inmortales" element={<Inmortales />} />
             <Route path="/arcanos" element={<Arcanos />} />

@@ -14,7 +14,7 @@ const Navbar = () => {
       
       <div style={styles.navLinks}>
         <Link to="/" className="nav-link" style={styles.link}>INICIO</Link>
-        <Link to="/sets Cache" className="nav-link" style={styles.link}>SETS Cache</Link>
+        <Link to="/sets" className="nav-link" style={styles.link}>SETS Cache</Link>
         <Link to="/climas" className="nav-link" style={styles.link}>CLIMAS</Link>
         <Link to="/inmortales" className="nav-link" style={styles.link}>INMORTALES</Link>
         <Link to="/arcanos" className="nav-link" style={styles.link}>ARCANOS</Link>
