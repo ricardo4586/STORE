@@ -23,8 +23,7 @@ import 'swiper/css/effect-fade';
 // =============================================================================
 // CONFIG
 // =============================================================================
-const API_URL =
-  import.meta.env.VITE_API_URL || 'http://localhost:5000/api/productos';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const FONDOS_ARCANOS = [
   '/imagen4.jpeg',

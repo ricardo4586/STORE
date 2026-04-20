@@ -24,8 +24,8 @@ import {
 // =============================================================================
 // CONFIGURACIÓN — cambia estos valores por los tuyos
 // =============================================================================
-const WHATSAPP_NUMERO = '51999999999'; // sin '+' ni espacios
-const EMAIL_CONTACTO  = 'soporte@dotastore.com';
+const WHATSAPP_NUMERO = '912167997'; // sin '+' ni espacios
+const EMAIL_CONTACTO  = 'ricardo.quispe.a@tecsup.edu.pe';
 const MENSAJE_WHATSAPP = encodeURIComponent(
   'Hola! Me interesa un ítem de DOTASTORE, ¿podrías ayudarme?'
 );
