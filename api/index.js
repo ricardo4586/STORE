@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import supabase from './backend/config/db.js';
+import supabase from './db.js';
 import productoRoutes from './backend/routes/productoRoutes.js';
 
 dotenv.config();
