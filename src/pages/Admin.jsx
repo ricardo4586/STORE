@@ -461,7 +461,7 @@ const Admin = () => {
       heroe: form.heroe.trim(),
       precio: Number(form.precio),
       rareza: form.rareza.trim(),
-      imagenUrl: form.imagenUrl.trim(),
+      imagen_url: form.imagenUrl.trim(),
       categoria: form.categoria,
       stock: Boolean(form.stock),
     };
