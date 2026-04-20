@@ -12,7 +12,7 @@ const Login = () => {
     
     try {
       // 1. Enviamos los datos al backend, no los validamos aquí
-      const response = await axios.post('http://localhost:5000/api/login', { user, pass });
+      const response = await axios.post('https://panterastore.vercel.app/api/login', { user, pass });
 
       if (response.data.success) {
         // 2. Si el servidor dice que ok, guardamos el token y entramos
