@@ -1,76 +1,87 @@
-const express = require('express');
-const cors = require('cors');
-const { createClient } = require('@supabase/supabase-js');
-require('dotenv').config();
+import express from 'express';
+import cors from 'cors';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 
 // --- CONFIGURACIÓN DE SUPABASE ---
 const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE; 
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // --- MIDDLEWARES ---
-app.use(cors({
-    origin: ['https://panterastore.vercel.app', 'http://localhost:5173'], // Permitimos local para tus pruebas
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    credentials: true
-}));
-app.use(express.json());
+app.use(cors());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // --- RUTAS ---
 
 // 1. Salud del servidor
 app.get('/api', (req, res) => {
-    res.send('Servidor de Pantera Store en Vercel + Supabase funcionando 🚀');
+    res.json({ mensaje: 'Servidor de Pantera Store operativo 🚀' });
 });
 
-// 2. Obtener TODO el catálogo
+// 2. Login de Administrador
+app.post('/api/login', (req, res) => {
+    const { user, pass } = req.body;
+    const ADMIN_USER = "admin";
+    const ADMIN_PASS = "pantera2024";
+
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        res.json({ success: true, token: "PANTERA_SESSION_TOKEN_2026" });
+    } else {
+        res.status(401).json({ success: false, message: "Credenciales inválidas" });
+    }
+});
+
+// 3. Obtener todo el catálogo de Dota 2
 app.get('/api/productos', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('productos')
             .select('*')
-            .order('created_at', { ascending: false }); // Los más nuevos primero
+            .order('id', { ascending: false });
 
         if (error) throw error;
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: 'Error al obtener productos', details: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// 3. Obtener productos por CATEGORÍA (Para tus páginas de Arcanos, Climas, etc.)
+// 4. Filtrar por categoría (Arcanos, Inmortales, etc.)
 app.get('/api/productos/categoria/:cat', async (req, res) => {
     const { cat } = req.params;
     try {
         const { data, error } = await supabase
             .from('productos')
             .select('*')
-            .ilike('categoria', cat); // ilike no distingue entre mayúsculas y minúsculas
+            .ilike('categoria', `%${cat}%`);
 
         if (error) throw error;
         res.json(data);
     } catch (error) {
-        res.status(500).json({ error: 'Error al filtrar', details: error.message });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// 4. Obtener un solo producto (Para la vista de detalle)
-app.get('/api/productos/:id', async (req, res) => {
+// 5. Agregar producto (POST)
+app.post('/api/productos', async (req, res) => {
     try {
         const { data, error } = await supabase
             .from('productos')
-            .select('*')
-            .eq('id', req.params.id)
-            .single();
+            .insert([req.body])
+            .select();
 
         if (error) throw error;
-        res.json(data);
+        res.status(201).json(data[0]);
     } catch (error) {
-        res.status(404).json({ error: 'Producto no encontrado' });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// --- CONFIGURACIÓN PARA VERCEL ---
-module.exports = app;
+// EXPORTAR PARA VERCEL (Obligatorio)
+export default app;
