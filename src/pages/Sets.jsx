@@ -20,7 +20,7 @@ import ProductoCard from '../components/ProductoCard';
 import 'swiper/css';
 import 'swiper/css/effect-fade';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = 'https://panterastore.vercel.app/api';
 
 const FONDOS_SETS = [
   '/imagen4.jpeg',
