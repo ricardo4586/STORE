@@ -1,43 +1,133 @@
 import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
 import supabase from '../../config/db.js';
-import productoRoutes from './backend/routes/productoRoutes.js';
 
-dotenv.config();
+const router = express.Router();
 
-const app = express();
+// 1. Obtener todos los productos
+router.get('/', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*')
+      .order('id', { ascending: false });
 
-// --- MIDDLEWARES ---
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
-
-// --- RUTAS DE SALUD ---
-app.get('/api', (req, res) => {
-  res.json({ mensaje: 'Servidor de Pantera Store operativo 🚀' });
-});
-
-// --- RUTAS DE PRODUCTOS ---
-app.use('/api/productos', productoRoutes);
-
-// --- RUTA DE LOGIN ADMIN ---
-app.post('/api/login', (req, res) => {
-  const { user, pass } = req.body;
-  const ADMIN_USER = "admin";
-  const ADMIN_PASS = "pantera2024";
-
-  if (user === ADMIN_USER && pass === ADMIN_PASS) {
-    res.json({ success: true, token: "PANTERA_SESSION_TOKEN_2026" });
-  } else {
-    res.status(401).json({ success: false, message: "Credenciales inválidas" });
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener productos", error: error.message });
   }
 });
 
-// --- MANEJO DE ERRORES 404 ---
-app.use((req, res) => {
-  res.status(404).json({ error: "Ruta no encontrada" });
+// 2. Obtener producto por ID
+router.get('/:id', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ message: "Producto no encontrado" });
+
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener producto", error: error.message });
+  }
 });
 
-// EXPORTAR PARA VERCEL
-export default app;
+// 3. Crear un nuevo producto
+router.post('/', async (req, res) => {
+  try {
+    const { nombre, heroe, precio, rareza, imagen_url, categoria, stock } = req.body;
+
+    if (!nombre || !heroe || !precio || !rareza || !imagen_url || !categoria) {
+      return res.status(400).json({ message: "Faltan campos requeridos" });
+    }
+
+    const { data, error } = await supabase
+      .from('productos')
+      .insert([{
+        nombre,
+        heroe,
+        precio,
+        rareza,
+        imagen_url,
+        categoria,
+        stock: stock !== undefined ? stock : true
+      }])
+      .select();
+
+    if (error) throw error;
+    res.status(201).json(data[0]);
+  } catch (error) {
+    res.status(400).json({ message: "Error al crear producto", error: error.message });
+  }
+});
+
+// 4. Actualizar un producto
+router.put('/:id', async (req, res) => {
+  try {
+    const { nombre, heroe, precio, rareza, imagen_url, categoria, stock } = req.body;
+
+    const { data, error } = await supabase
+      .from('productos')
+      .update({
+        nombre,
+        heroe,
+        precio,
+        rareza,
+        imagen_url,
+        categoria,
+        stock
+      })
+      .eq('id', req.params.id)
+      .select();
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    res.json(data[0]);
+  } catch (error) {
+    res.status(400).json({ message: "Error al actualizar producto", error: error.message });
+  }
+});
+
+// 5. Eliminar un producto
+router.delete('/:id', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .delete()
+      .eq('id', req.params.id)
+      .select();
+
+    if (error) throw error;
+    if (!data || data.length === 0) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    res.json({ message: "Producto eliminado correctamente", producto: data[0] });
+  } catch (error) {
+    res.status(400).json({ message: "Error al eliminar producto", error: error.message });
+  }
+});
+
+// 6. Filtrar por categoría
+router.get('/categoria/:cat', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('productos')
+      .select('*')
+      .ilike('categoria', `%${req.params.cat}%`);
+
+    if (error) throw error;
+    res.json(data);
+  } catch (error) {
+    res.status(500).json({ message: "Error al filtrar productos", error: error.message });
+  }
+});
+
+export default router;
