@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
-// Importación de iconos
 import { Search, CloudSun, DollarSign, ListFilter, RotateCcw, AlertCircle } from 'lucide-react';
 import ProductoCard from '../components/ProductoCard';
 
@@ -35,7 +34,7 @@ const OPCIONES_ORDEN = {
 };
 
 // =============================================================================
-// ANIMACIONES (Efecto Zoom Ken Burns optimizado)
+// ANIMACIONES
 // =============================================================================
 const KEYFRAMES = `
   @keyframes kenBurns {
@@ -70,13 +69,15 @@ const Climas = () => {
   const [soloStock, setSoloStock] = useState(false);
   const [precioMax, setPrecioMax] = useState('');
 
+  // ✅ CORREGIDO: se pasa la categoría como parámetro y se valida que sea array
   const obtenerClimas = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const { data } = await axios.get(API_URL);
-      const soloClimas = data.filter((item) => item.categoria === 'climas');
-      setClimasData(soloClimas);
+      const res = await axios.get(API_URL, {
+        params: { categoria: 'climas' },
+      });
+      setClimasData(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Error al cargar climas:', err);
       setError('No se pudo conectar con el servidor');
@@ -136,7 +137,7 @@ const Climas = () => {
           <Swiper
             modules={[Autoplay, EffectFade]}
             effect="fade"
-            speed={3000} // Transición suave entre slides
+            speed={3000}
             autoplay={{ delay: 5000, disableOnInteraction: false }}
             loop
             style={styles.swiper}
@@ -297,12 +298,13 @@ const styles = {
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     position: 'relative',
-    animation: 'kenBurns 10s linear infinite alternate', // Zoom continuo
+    animation: 'kenBurns 10s linear infinite alternate',
   },
+  // ✅ CORREGIDO: overlay más suave para que se vean mejor las imágenes
   slideOverlay: {
     position: 'absolute',
     inset: 0,
-    background: 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(10,10,15,0.9) 100%)',
+    background: 'linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(10,10,15,0.55) 100%)',
   },
   contentLayer: { position: 'relative', zIndex: 1, padding: '80px 5% 100px' },
   header: { textAlign: 'center', marginBottom: '50px', animation: 'fadeInUp 0.8s ease' },
