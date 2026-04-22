@@ -22,9 +22,9 @@ import 'swiper/css/effect-fade';
 // CONFIG
 // =============================================================================
 const IMAGENES_FONDO = [
-  '/imagen1carrucel.png',
-  '/imagen2carrusel.png',
-  '/imagen3carrusel.png',
+  '/imagen5.png',
+  '/imagen11.png',
+  '/imagen12.png',
 ];
 
 const CATEGORIAS_HERO = [
@@ -36,20 +36,15 @@ const CATEGORIAS_HERO = [
 ];
 
 const BENEFICIOS = [
-  { icon: ShieldCheck,  titulo: 'Compra segura',  desc: 'Pago protegido y 100% confiable.' },
-  { icon: Zap,          titulo: 'Entrega rápida', desc: 'Trade en Steam en menos de 30 min.' },
-  { icon: MessageCircle,titulo: 'Soporte real',   desc: 'Te atendemos por WhatsApp al toque.' },
+  { icon: ShieldCheck,   titulo: 'Compra segura',  desc: 'Pago protegido y 100% confiable.' },
+  { icon: Zap,           titulo: 'Entrega rápida', desc: 'Trade en Steam en menos de 30 min.' },
+  { icon: MessageCircle, titulo: 'Soporte real',   desc: 'Te atendemos por WhatsApp al toque.' },
 ];
 
 // =============================================================================
-// KEYFRAMES
+// KEYFRAMES (kenBurns eliminado)
 // =============================================================================
 const keyframes = `
-  @keyframes kenBurns {
-    0%   { transform: scale(1)    translate(0, 0); }
-    50%  { transform: scale(1.15) translate(-2%, -1%); }
-    100% { transform: scale(1)    translate(0, 0); }
-  }
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
     to   { opacity: 1; transform: translateY(0); }
@@ -84,11 +79,11 @@ export default function Inicio() {
         >
           {IMAGENES_FONDO.map((url, i) => (
             <SwiperSlide key={i}>
+              {/* ✅ Sin animation kenBurns — imagen estática y nítida */}
               <div
                 style={{
                   ...styles.slideBackground,
                   backgroundImage: `url(${url})`,
-                  animation: 'kenBurns 20s ease-in-out infinite',
                 }}
               />
             </SwiperSlide>
@@ -100,6 +95,7 @@ export default function Inicio() {
       {/* CONTENIDO */}
       <div style={styles.contentOverlay}>
         <div style={{ ...styles.heroContent, animation: 'fadeInUp 0.8s ease' }}>
+
           {/* Badge flotante */}
           <div style={{ ...styles.badge, animation: 'floatBadge 3s ease-in-out infinite' }}>
             <Sparkles size={14} />
@@ -143,11 +139,7 @@ export default function Inicio() {
             {CATEGORIAS_HERO.map((cat) => {
               const Icon = cat.icon;
               return (
-                <Link
-                  key={cat.nombre}
-                  to={cat.path}
-                  style={{ textDecoration: 'none' }}
-                >
+                <Link key={cat.nombre} to={cat.path} style={{ textDecoration: 'none' }}>
                   <div
                     style={styles.quickNavItem}
                     onMouseEnter={(e) => {
@@ -184,6 +176,7 @@ export default function Inicio() {
               );
             })}
           </div>
+
         </div>
       </div>
     </div>
@@ -203,8 +196,7 @@ const styles = {
   },
   swiperWrapper: {
     position: 'absolute',
-    top: 0,
-    left: 0,
+    top: 0, left: 0,
     width: '100%',
     height: '100%',
     zIndex: 1,
@@ -215,12 +207,13 @@ const styles = {
     height: '100%',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
+    filter: 'brightness(0.75)',
   },
   backdropOverlay: {
     position: 'absolute',
     inset: 0,
     background:
-      'radial-gradient(ellipse at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.75) 100%), linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.55) 100%)',
+      'radial-gradient(ellipse at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%), linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.3) 100%)',
     zIndex: 2,
   },
   contentOverlay: {
@@ -270,8 +263,8 @@ const styles = {
     margin: '0 0 10px',
     letterSpacing: 2,
     color: '#fff',
-    textShadow: '2px 2px 10px rgba(0,0,0,0.85)',
     lineHeight: 1.15,
+    textShadow: '0 0 30px rgba(0,242,255,0.6)',
   },
   taglineAccent: {
     background:

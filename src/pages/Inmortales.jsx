@@ -14,9 +14,9 @@ import 'swiper/css/effect-fade';
 const API_URL = 'https://panterastore.vercel.app/api';
 
 const FONDOS_INMORTALES = [
-  '/imagen4.jpeg',
-  '/imagen3.jpeg',
-  '/imagen7.jpeg',
+  '/imagen12.png',
+  '/imagen1.png',
+  '/imagen5.png',
 ];
 
 const HEROES_CON_INMORTALES = [

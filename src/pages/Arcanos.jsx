@@ -26,7 +26,7 @@ import 'swiper/css/effect-fade';
 const API_URL = 'https://panterastore.vercel.app/api';
 
 const FONDOS_ARCANOS = [
-  '/imagen4.jpeg',
+  '/imagen6.png',
   '/imagen3.jpeg',
   '/imagen7.jpeg',
 ];
@@ -507,7 +507,7 @@ const styles = {
     width: '100%',
     height: '100%',
     backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    backgroundPosition: '50% 20%', 
     filter: 'brightness(0.6)',
   },
   // ✅ CORREGIDO: overlay más suave (0.4→0.75 reducido a 0.15→0.45)
@@ -546,7 +546,7 @@ const styles = {
     textTransform: 'uppercase',
     color: '#fff',
     margin: 0,
-    textShadow: '0 4px 30px rgba(188,19,254,0.35)',
+    textShadow: '0 0 30px rgba(188, 19, 254, 0.6)',
   },
   underline: {
     height: 4,

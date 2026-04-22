@@ -23,9 +23,9 @@ import 'swiper/css/effect-fade';
 const API_URL = 'https://panterastore.vercel.app/api';
 
 const FONDOS_SETS = [
-  '/imagen4.jpeg',
-  '/imagen3.jpeg',
-  '/imagen7.jpeg',
+  '/imagen6.png',
+  '/imagen3.png',
+  '/imagen7.png',
 ];
 
 const HEROES_POR_ATRIBUTO = {
@@ -218,7 +218,7 @@ const styles = {
   backdropOverlay: { position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at top, rgba(0,242,255,0.08) 0%, transparent 70%), linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)', zIndex: 1 },
   contentLayer: { position: 'relative', zIndex: 2, padding: '120px 5% 100px', maxWidth: 1400, margin: '0 auto' },
   header: { textAlign: 'center', marginBottom: 40 },
-  title: { fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#fff' },
+  title: { fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#fff', textShadow: '0 0 30px rgba(0, 242, 255, 0.6)',},
   underline: { height: 3, width: 80, background: '#00f2ff', margin: '15px auto', boxShadow: '0 0 15px #00f2ff' },
   subtitle: { color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem' },
   filterContainer: {

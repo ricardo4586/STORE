@@ -156,7 +156,7 @@ const NAV_STYLES = `
     --cyan: #00f2ff;
     --cyan-dim: rgba(0,242,255,0.15);
     --cyan-glow: rgba(0,242,255,0.4);
-    --nav-h: 72px;
+    --nav-h: 81px;
     --nav-bg: rgba(6,6,10,0.85);
     --nav-bg-scrolled: rgba(4,4,8,0.97);
     --panel-w: 300px;

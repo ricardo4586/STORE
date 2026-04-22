@@ -20,9 +20,9 @@ import 'swiper/css/effect-fade';
 const API_URL = 'https://panterastore.vercel.app/api';
 
 const FONDOS_COURIERS = [
+  '/imagen12.png',
+  '/imagen11.png',
   '/imagen1.png',
-  '/imagen2.png',
-  '/imagen6.jpeg',
 ];
 
 // =============================================================================
@@ -256,6 +256,7 @@ const styles = {
     color: '#fff',
     margin: 0,
     textShadow: '0 4px 30px rgba(0,242,255,0.3)',
+    textShadow: '0 0 30px rgba(0, 242, 255, 0.6)',
   },
   underline: {
     height: 4,
