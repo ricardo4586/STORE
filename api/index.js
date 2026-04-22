@@ -8,8 +8,33 @@ dotenv.config();
 
 const app = express();
 
+// --- CORS ---
+// ✅ Configuración explícita para que funcione en Vercel (incluyendo previews)
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Permite: sin origen (Postman/curl), localhost, y cualquier dominio de Vercel
+    if (
+      !origin ||
+      origin.includes('localhost') ||
+      origin.includes('vercel.app') ||
+      origin.includes('panterastore')
+    ) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
+// ✅ Maneja las peticiones preflight OPTIONS explícitamente
+app.options('*', cors(corsOptions));
+
 // --- MIDDLEWARES ---
-app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
