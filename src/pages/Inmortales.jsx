@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, EffectFade } from 'swiper/modules';
-// Importación de los nuevos iconos
 import { Search, Sword, DollarSign, ListFilter, RotateCcw, AlertTriangle } from 'lucide-react';
 import ProductoCard from '../components/ProductoCard';
 
@@ -75,13 +74,15 @@ const Inmortales = () => {
   const [soloStock, setSoloStock] = useState(false);
   const [precioMax, setPrecioMax] = useState('');
 
+  // ✅ CORREGIDO: se pasa la categoría como parámetro y se valida que sea array
   const obtenerInmortales = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const { data } = await axios.get(API_URL);
-      const soloInmortales = data.filter((i) => i.categoria === 'inmortales');
-      setInmortalesData(soloInmortales);
+      const res = await axios.get(API_URL, {
+        params: { categoria: 'inmortales' },
+      });
+      setInmortalesData(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
       console.error('Error al cargar inmortales:', err);
       setError('No se pudo conectar con el servidor');
@@ -173,7 +174,6 @@ const Inmortales = () => {
         </div>
 
         <div style={styles.contentLayer}>
-          {/* Hero */}
           <div style={styles.header}>
             <div style={styles.badge}>COLECCIÓN PREMIUM</div>
             <h1 style={styles.title}>
@@ -206,7 +206,6 @@ const Inmortales = () => {
             </div>
           </div>
 
-          {/* Filtros con Iconos Actualizados */}
           <div style={styles.filterBar}>
             <div style={styles.filterGrid}>
               <div style={styles.filterCol}>
@@ -335,7 +334,7 @@ const Inmortales = () => {
 };
 
 // =============================================================================
-// ESTILOS (Sin cambios)
+// ESTILOS
 // =============================================================================
 const styles = {
   mainWrapper: { position: 'relative', minHeight: '100vh', backgroundColor: '#000', overflow: 'hidden' },
@@ -349,11 +348,11 @@ const styles = {
     position: 'relative',
     animation: 'kenBurns 20s ease-in-out infinite alternate',
   },
+  // ✅ CORREGIDO: overlay más suave para que se vean las imágenes de fondo
   slideOverlay: {
     position: 'absolute',
     inset: 0,
-    background:
-      'linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(10,10,15,0.85) 100%)',
+    background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(10,10,15,0.55) 100%)',
   },
   contentLayer: { position: 'relative', zIndex: 1, padding: '80px 5% 100px' },
   header: { textAlign: 'center', marginBottom: '50px', animation: 'fadeInUp 0.8s ease' },
@@ -422,13 +421,13 @@ const styles = {
     marginBottom: '15px',
   },
   filterCol: { display: 'flex', flexDirection: 'column', gap: '6px' },
-  label: { 
-    fontSize: '0.7rem', 
-    color: 'var(--neon-cyan)', 
-    fontWeight: 'bold', 
+  label: {
+    fontSize: '0.7rem',
+    color: 'var(--neon-cyan)',
+    fontWeight: 'bold',
     letterSpacing: '2px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   input: {
     padding: '10px 14px',
@@ -464,7 +463,7 @@ const styles = {
     fontSize: '0.8rem',
     fontWeight: 'bold',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   grid: {
     display: 'grid',

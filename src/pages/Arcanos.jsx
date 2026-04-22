@@ -31,7 +31,6 @@ const FONDOS_ARCANOS = [
   '/imagen7.jpeg',
 ];
 
-
 const HEROES_ARCANOS = [
   'Lina',
   'Legion Commander',
@@ -138,10 +137,9 @@ export default function Arcanos() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // filtros
   const [busqueda, setBusqueda] = useState('');
   const [heroeSeleccionado, setHeroeSeleccionado] = useState('TODOS');
-  const [stockFiltro, setStockFiltro] = useState('TODOS'); // TODOS | DISPONIBLE | AGOTADO
+  const [stockFiltro, setStockFiltro] = useState('TODOS');
   const [precioMin, setPrecioMin] = useState('');
   const [precioMax, setPrecioMax] = useState('');
   const [orden, setOrden] = useState('recientes');
@@ -504,18 +502,20 @@ const styles = {
     zIndex: 0,
   },
   swiper: { width: '100%', height: '100%' },
+  // ✅ CORREGIDO: brightness subido de 0.35 → 0.6
   slideBackground: {
     width: '100%',
     height: '100%',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    filter: 'brightness(0.35)',
+    filter: 'brightness(0.6)',
   },
+  // ✅ CORREGIDO: overlay más suave (0.4→0.75 reducido a 0.15→0.45)
   backdropOverlay: {
     position: 'absolute',
     inset: 0,
     background:
-      'radial-gradient(ellipse at top, rgba(188,19,254,0.15) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.75) 100%)',
+      'radial-gradient(ellipse at top, rgba(188,19,254,0.15) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%)',
     zIndex: 1,
   },
   contentLayer: {

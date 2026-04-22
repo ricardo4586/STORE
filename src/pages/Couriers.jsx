@@ -25,7 +25,6 @@ const FONDOS_COURIERS = [
   '/imagen6.jpeg',
 ];
 
-
 // =============================================================================
 // KEYFRAMES
 // =============================================================================
@@ -86,20 +85,13 @@ export default function Couriers() {
     try {
       setLoading(true);
       setError(null);
-
-      // Pedimos al backend solo la categoría couriers
       const res = await axios.get(API_URL, {
         params: { categoria: 'couriers' },
       });
-
       const data = Array.isArray(res.data) ? res.data : [];
-
-      // 🔒 SEGURIDAD EXTRA: aunque el backend devuelva algo raro,
-      // filtramos en el cliente para asegurarnos de mostrar SOLO couriers.
       const soloCouriers = data.filter(
         (p) => p?.categoria?.toLowerCase() === 'couriers'
       );
-
       setCouriersData(soloCouriers);
     } catch (err) {
       console.error('Error al cargar couriers:', err);
@@ -161,7 +153,6 @@ export default function Couriers() {
             Los compañeros más leales para llevar tus ítems por el mapa.
           </p>
 
-          {/* Contador minimalista */}
           {!loading && !error && couriersData.length > 0 && (
             <div style={styles.counterChip}>
               <Package size={14} />
@@ -220,18 +211,20 @@ const styles = {
     zIndex: 0,
   },
   swiper: { width: '100%', height: '100%' },
+  // ✅ CORREGIDO: brightness 0.35 → 0.6, eliminado blur(2px) para mayor nitidez
   slideBackground: {
     width: '100%',
     height: '100%',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-    filter: 'brightness(0.35) blur(2px)',
+    filter: 'brightness(0.6)',
   },
+  // ✅ CORREGIDO: overlay más suave (0.35→0.75 reducido a 0.15→0.45)
   backdropOverlay: {
     position: 'absolute',
     inset: 0,
     background:
-      'radial-gradient(ellipse at top, rgba(0,242,255,0.12) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.75) 100%)',
+      'radial-gradient(ellipse at top, rgba(0,242,255,0.12) 0%, transparent 60%), linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%)',
     zIndex: 1,
   },
   contentLayer: {
