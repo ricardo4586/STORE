@@ -94,7 +94,8 @@ const esUrlValida = (url) => {
   }
 };
 
-const api = axios.create({ baseURL: API_URL });
+// ✅ FIX 1: baseURL con trailing slash para que las rutas relativas funcionen correctamente
+const api = axios.create({ baseURL: API_URL + '/' });
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('adminToken');
   if (token && token !== 'true') {
@@ -371,7 +372,8 @@ const Admin = () => {
   const listarProductos = useCallback(async () => {
     try {
       setCargando(true);
-      const { data } = await api.get('/');
+      // ✅ FIX 2: sin slash inicial → va a baseURL + '' = /api/
+      const { data } = await api.get('');
       setProductos(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Error al listar:', err);
@@ -469,10 +471,12 @@ const Admin = () => {
     try {
       setGuardando(true);
       if (editandoId) {
-        await api.put(`/${editandoId}`, payload);
+        // ✅ FIX 3a: sin slash inicial en el PUT de edición → /api/{id}
+        await api.put(editandoId, payload);
         mostrarToast('Producto actualizado', 'success');
       } else {
-        await api.post('/', payload);
+        // ✅ FIX 3b: sin slash inicial en el POST → /api/
+        await api.post('', payload);
         mostrarToast('Producto creado', 'success');
       }
       cancelarEdicion();
@@ -507,7 +511,8 @@ const Admin = () => {
   const eliminarProducto = async (id, nombre) => {
     if (!window.confirm(`¿Eliminar "${nombre}"?\nEsta acción no se puede deshacer.`)) return;
     try {
-      await api.delete(`/${id}`);
+      // ✅ FIX 4: sin slash inicial en el DELETE → /api/{id}
+      await api.delete(id);
       mostrarToast('Producto eliminado', 'success');
       listarProductos();
     } catch (err) {
@@ -518,7 +523,8 @@ const Admin = () => {
 
   const alternarStock = async (p) => {
     try {
-      await api.put(`/${p._id}`, { ...p, stock: !p.stock });
+      // ✅ FIX 5: sin slash inicial en el PUT de stock → /api/{id}
+      await api.put(p._id, { ...p, stock: !p.stock });
       setProductos((prev) =>
         prev.map((x) => (x._id === p._id ? { ...x, stock: !x.stock } : x))
       );
