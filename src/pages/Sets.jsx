@@ -1,4 +1,4 @@
-// src/pages/Sets.jsx - Versión Corregida
+// src/pages/Sets.jsx
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import axios from 'axios';
@@ -119,6 +119,7 @@ export default function Sets() {
         <Swiper modules={[Autoplay, EffectFade]} effect="fade" speed={2500} autoplay={{ delay: 6000 }} loop style={styles.swiper}>
           {FONDOS_SETS.map((url, index) => (
             <SwiperSlide key={index}>
+              {/* ✅ brightness aumentado de 0.3 a 0.6 para ver mejor las imágenes */}
               <div style={{ ...styles.slideBackground, backgroundImage: `url(${url})`, animation: 'kenBurns 20s ease-in-out infinite' }} />
             </SwiperSlide>
           ))}
@@ -158,8 +159,8 @@ export default function Sets() {
                     ...(activo
                       ? {
                           borderColor: attr.color,
-                          background: 'rgba(0,0,0,0.3)', // Fondo oscuro leve
-                          color: attr.color,           // Texto del color del atributo
+                          background: 'rgba(0,0,0,0.3)',
+                          color: attr.color,
                           boxShadow: `0 0 15px ${attr.color}33`,
                         }
                       : {
@@ -183,6 +184,15 @@ export default function Sets() {
         <div style={styles.grid}>
           {loading ? (
             Array.from({ length: 8 }).map((_, i) => <SkeletonCard key={i} />)
+          ) : error ? (
+            <div style={styles.stateCard}>
+              <AlertCircle size={42} color="#ff4f6e" />
+              <h3 style={styles.stateTitle}>Ups, algo salió mal</h3>
+              <p style={styles.stateText}>{error}</p>
+              <button onClick={cargarSets} style={styles.retryBtn}>
+                <RefreshCw size={16} /> Reintentar
+              </button>
+            </div>
           ) : productosFiltrados.length > 0 ? (
             productosFiltrados.map((item) => <ProductoCard key={item._id} producto={item} />)
           ) : (
@@ -202,34 +212,36 @@ const styles = {
   mainWrapper: { position: 'relative', minHeight: '100vh', backgroundColor: '#000' },
   swiperWrapper: { position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 },
   swiper: { width: '100%', height: '100%' },
-  slideBackground: { width: '100%', height: '100%', backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.3) blur(1px)' },
-  backdropOverlay: { position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at top, rgba(0,242,255,0.08) 0%, transparent 70%), linear-gradient(180deg, rgba(0,0,0,0.2) 0%, #000 100%)', zIndex: 1 },
+  // ✅ brightness subido de 0.3 → 0.6, sin blur para que se vea más nítido
+  slideBackground: { width: '100%', height: '100%', backgroundSize: 'cover', backgroundPosition: 'center', filter: 'brightness(0.6)' },
+  // ✅ overlay más suave: de rgba(0,0,0,0.2)→#000 a rgba(0,0,0,0.1)→rgba(0,0,0,0.5)
+  backdropOverlay: { position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at top, rgba(0,242,255,0.08) 0%, transparent 70%), linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%)', zIndex: 1 },
   contentLayer: { position: 'relative', zIndex: 2, padding: '120px 5% 100px', maxWidth: 1400, margin: '0 auto' },
   header: { textAlign: 'center', marginBottom: 40 },
   title: { fontSize: 'clamp(2rem, 5vw, 3.5rem)', fontWeight: 900, letterSpacing: 2, textTransform: 'uppercase', color: '#fff' },
   underline: { height: 3, width: 80, background: '#00f2ff', margin: '15px auto', boxShadow: '0 0 15px #00f2ff' },
   subtitle: { color: 'rgba(255,255,255,0.6)', fontSize: '1.1rem' },
-  filterContainer: { 
-    display: 'flex', 
-    flexDirection: 'column', 
-    alignItems: 'center', 
-    gap: 25, 
-    background: 'rgba(255,255,255,0.03)', 
-    backdropFilter: 'blur(10px)', 
-    padding: '2rem', 
-    borderRadius: 20, 
-    border: '1px solid rgba(255,255,255,0.05)', 
-    maxWidth: 900, 
-    margin: '0 auto 40px' 
+  filterContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 25,
+    background: 'rgba(255,255,255,0.03)',
+    backdropFilter: 'blur(10px)',
+    padding: '2rem',
+    borderRadius: 20,
+    border: '1px solid rgba(255,255,255,0.05)',
+    maxWidth: 900,
+    margin: '0 auto 40px'
   },
-  searchInput: { 
-    padding: '0.9rem 1.2rem', 
-    width: '100%', 
-    borderRadius: 12, 
-    border: '1px solid rgba(0,242,255,0.2)', 
-    backgroundColor: 'rgba(0,0,0,0.5)', 
-    color: '#fff', 
-    outline: 'none' 
+  searchInput: {
+    padding: '0.9rem 1.2rem',
+    width: '100%',
+    borderRadius: 12,
+    border: '1px solid rgba(0,242,255,0.2)',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    color: '#fff',
+    outline: 'none'
   },
   attributeButtons: { display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center' },
   btnBase: {
@@ -245,11 +257,24 @@ const styles = {
     fontSize: '0.8rem',
     letterSpacing: 1,
     outline: 'none',
-    WebkitTapHighlightColor: 'transparent' // Quita el flash en móviles
+    WebkitTapHighlightColor: 'transparent',
   },
   resultsCount: { color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginBottom: 30 },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 30 },
-  stateCard: { gridColumn: '1/-1', textAlign: 'center', padding: '4rem', opacity: 0.5 },
+  stateCard: { gridColumn: '1/-1', textAlign: 'center', padding: '4rem', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 },
   stateTitle: { color: '#fff', marginTop: 15 },
-  stateText: { color: 'rgba(255,255,255,0.5)' }
+  stateText: { color: 'rgba(255,255,255,0.5)' },
+  retryBtn: {
+    marginTop: 14,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: 8,
+    background: 'linear-gradient(135deg, #00f2ff, #0077ff)',
+    border: 'none',
+    color: '#fff',
+    padding: '0.7rem 1.4rem',
+    borderRadius: 10,
+    cursor: 'pointer',
+    fontWeight: 700,
+  },
 };
